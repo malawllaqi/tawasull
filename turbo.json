@@ -32,6 +32,15 @@
 		"db:generate": {
 			"cache": false,
 			"persistent": true
+		},
+		"docker:build": {
+			"cache": false
+		},
+		"docker:up": {
+			"cache": false
+		},
+		"docker:down": {
+			"cache": false
 		}
 	}
 }

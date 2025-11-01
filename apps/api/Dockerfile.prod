@@ -1,0 +1,40 @@
+FROM node:22-alpine AS base
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# =============================== BUILDER STAGE ===============================
+FROM base as builder
+WORKDIR /app
+
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY turbo.json tsconfig.base.json ./
+
+COPY packages ./packages
+COPY apps/api ./apps/api
+
+RUN pnpm install 
+RUN pnpm run build --filter api
+
+# =============================== PRODUCTION STAGE ===============================
+FROM base AS production
+WORKDIR /app
+
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY packages ./packages
+
+# Copy built api
+COPY --from=builder /app/apps/api/dist ./apps/api
+# Install production dependencies only
+WORKDIR /app/apps/api
+RUN pnpm install --prod 
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
+RUN chown -R nodejs:nodejs /app
+USER nodejs
+
+EXPOSE 3000
+
+CMD ["node", "index.js"]
+
