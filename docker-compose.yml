@@ -1,20 +1,41 @@
 version: '3.9'
 
 services:
+  db:
+    container_name: db
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    networks:
+      - tawasul-network
   api:
     build:
       context: .
       dockerfile: ./apps/api/Dockerfile
     container_name: tawasull-api
     restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://postgres:password@db:5432/postgres
     ports:
       - 3000:3000
     volumes:
-      # Mount entire monorepo to preserve workspace structure
       - .:/app
-      # Preserve node_modules at root level (workspace hoisting)
       - /app/node_modules
-      # Preserve api-specific node_modules
       - /app/apps/api/node_modules
     working_dir: /app/apps/api
     command: pnpm dev
+    networks:
+      - tawasul-network
+    depends_on:
+      - db
+networks:
+  tawasul-network:
+    driver: bridge
+volumes:
+  pgdata:
