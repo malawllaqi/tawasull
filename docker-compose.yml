@@ -27,9 +27,8 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+      - /app/packages/auth/node_modules
       - /app/apps/api/node_modules
-    working_dir: /app/apps/api
-    command: pnpm dev
     networks:
       - tawasul-network
     depends_on:

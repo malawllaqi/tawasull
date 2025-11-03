@@ -13,7 +13,7 @@ COPY packages ./packages
 COPY apps/api ./apps/api
 
 # Install dependencies
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
 WORKDIR /app/apps/api
 
