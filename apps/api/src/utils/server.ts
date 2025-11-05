@@ -2,7 +2,12 @@ import fastifyCookie from "@fastify/cookie";
 import { auth } from "@tawasull/auth";
 import type { DB } from "@tawasull/db";
 import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
+import {
+	serializerCompiler,
+	validatorCompiler,
+} from "fastify-type-provider-zod";
 import { authRouter } from "@/modules/auth/auth.route";
+import { postRouter } from "@/modules/post/post.route";
 import { getEnv } from "./env";
 import { envToLogger } from "./logger";
 import type { Session, User } from "./types";
@@ -29,6 +34,10 @@ export async function buildServer(db: DB) {
 		logger: envToLogger[getEnv("NODE_ENV")],
 	});
 
+	// Add schema validator and serializer
+	fastify.setValidatorCompiler(validatorCompiler);
+	fastify.setSerializerCompiler(serializerCompiler);
+
 	fastify.register(fastifyCookie);
 
 	fastify.addHook("onRequest", async (req) => {
@@ -50,6 +59,7 @@ export async function buildServer(db: DB) {
 
 	fastify.after(() => {
 		fastify.register(authRouter);
+		fastify.register(postRouter, { prefix: "/api/v1/post" });
 		fastify.get("/healthcheck", async () => {
 			return { status: "ok" };
 		});

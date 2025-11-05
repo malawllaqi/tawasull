@@ -16,16 +16,21 @@
 		"@tawasull/db": "workspace:*",
 		"better-auth": "catalog:",
 		"dotenv": "catalog:",
+		"drizzle-zod": "^0.8.3",
 		"fastify": "^5.3.3",
+		"fastify-type-provider-zod": "^6.1.0",
+		"http-status-codes": "^2.3.0",
 		"pino": "^10.1.0",
 		"zod": "catalog:"
 	},
 	"devDependencies": {
 		"@faker-js/faker": "^10.1.0",
+		"@testcontainers/postgresql": "^11.7.2",
 		"@types/node": "catalog:",
 		"pino-pretty": "^13.1.2",
 		"tsdown": "catalog:",
 		"tsx": "^4.19.2",
-		"typescript": "catalog:"
+		"typescript": "catalog:",
+		"vitest": "^4.0.7"
 	}
 }

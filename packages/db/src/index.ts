@@ -26,3 +26,6 @@ export async function ping(db: DB) {
 }
 
 export type DB = Awaited<ReturnType<typeof setupDB>>["db"];
+export type Client = Awaited<ReturnType<typeof setupDB>>["client"];
+
+export * from "drizzle-orm";
