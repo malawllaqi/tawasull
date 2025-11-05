@@ -61,3 +61,20 @@ describe("POST /api/post", () => {
 		expect(res.statusCode).toBe(401);
 	});
 });
+
+describe("GET /api/post", () => {
+	test("success - get jobs", async () => {
+		const app = await buildServer({ db });
+
+		const res = await app.inject({
+			method: "GET",
+			url: "/api/v1/post",
+			headers: {
+				cookie: await getCookie(app),
+			},
+		});
+
+		expect(res.statusCode).toBe(200);
+		expect(Array.isArray(res.json().items)).toBe(true);
+	});
+});
