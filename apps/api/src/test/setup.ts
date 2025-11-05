@@ -1,5 +1,6 @@
+import path from "node:path";
 import { beforeEach } from "node:test";
-import { type Client, type DB, setupDB, sql } from "@tawasull/db";
+import { type Client, type DB, migrate, setupDB, sql } from "@tawasull/db";
 import {
 	PostgreSqlContainer,
 	type StartedPostgreSqlContainer,
@@ -22,6 +23,15 @@ beforeAll(async () => {
 
 	dbClient = database.client;
 	db = database.db;
+
+	const migrationsFolder = path.resolve(
+		__dirname,
+		"../../../../packages/db/src/migrations",
+	);
+
+	await migrate(db, {
+		migrationsFolder,
+	});
 });
 
 beforeEach(async () => {

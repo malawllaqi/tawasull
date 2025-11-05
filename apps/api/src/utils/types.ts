@@ -1,8 +1,3 @@
-import type { auth } from "@tawasull/auth";
-
-export type Session = typeof auth.$Infer.Session.session;
-export type User = typeof auth.$Infer.Session.user;
-
 export interface PostgresErrorType extends Error {
 	code: string;
 	detail?: string;

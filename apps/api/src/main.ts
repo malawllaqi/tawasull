@@ -6,7 +6,8 @@ import { buildServer } from "./utils/server";
 
 async function main() {
 	const { db } = await setupDB();
-	const { HOST, PORT } = getEnv(["PORT", "HOST"]);
+	const PORT = getEnv("PORT");
+	const HOST = getEnv("HOST");
 
 	try {
 		await ping(db);
@@ -16,7 +17,7 @@ async function main() {
 		process.exit(1);
 	}
 
-	const server = await buildServer(db);
+	const server = await buildServer({ db });
 	try {
 		await server.listen({ port: PORT, host: HOST });
 	} catch (err) {

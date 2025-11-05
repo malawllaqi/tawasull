@@ -15,6 +15,13 @@
       "when": 1762074161994,
       "tag": "0001_opposite_starhawk",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1762326228216,
+      "tag": "0002_slimy_rumiko_fujikawa",
+      "breakpoints": true
     }
   ]
 }

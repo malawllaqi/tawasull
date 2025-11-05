@@ -1,15 +1,21 @@
-import { auth } from "@tawasull/auth";
-import type { DB } from "@tawasull/db";
+import type { Auth } from "@tawasull/auth";
 import { logger } from "@/utils/logger";
 
 export async function createUser(
-	input: { email: string; password: string },
-	db: DB,
+	input: {
+		email: string;
+		password: string;
+		username: string;
+		name: string;
+	},
+	auth: Auth,
 ) {
-	const { email, password } = input;
+	const { email, password, name, username } = input;
 
 	try {
-		const res = await auth.api.signInEmail({ body: { email, password } });
+		const res = await auth.api.signUpEmail({
+			body: { email, password, username, name },
+		});
 
 		return res;
 	} catch (error) {
