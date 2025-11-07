@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import { sql } from "drizzle-orm";
+import * as schema from "./schema";
 
 dotenv.config({
 	path: "../../apps/api/.env",
@@ -17,7 +18,7 @@ export async function setupDB(url?: string) {
 	const client = new Pool({
 		connectionString: url ?? process.env.DATABASE_URL ?? "",
 	});
-	const db = drizzle(client, { schema: {} });
+	const db = drizzle(client, { schema });
 
 	return { db, client };
 }

@@ -1,5 +1,9 @@
 import { post } from "@tawasull/db/schema";
-import { createInsertSchema, createSelectSchema } from "drizzle-zod";
+import {
+	createInsertSchema,
+	createSelectSchema,
+	createUpdateSchema,
+} from "drizzle-zod";
 import { z } from "zod";
 import { errorResponses } from "@/utils/http";
 export const createPostSchema = {
@@ -31,6 +35,40 @@ export const getPostsSchema = {
 			items: z.array(createSelectSchema(post)),
 			nextCursor: z.string(),
 		}),
+		...errorResponses,
+	},
+};
+
+export const getPostSchema = {
+	tags: ["post"],
+	params: z.object({
+		postId: z.uuid(),
+	}),
+	response: {
+		200: createSelectSchema(post),
+		...errorResponses,
+	},
+};
+
+export const updatePostSchema = {
+	tags: ["post"],
+	params: z.object({
+		postId: z.uuid(),
+	}),
+	body: createUpdateSchema(post),
+	response: {
+		200: createSelectSchema(post),
+		...errorResponses,
+	},
+};
+
+export const deletePostSchema = {
+	tags: ["post"],
+	params: z.object({
+		postId: z.uuid(),
+	}),
+	response: {
+		200: createSelectSchema(post),
 		...errorResponses,
 	},
 };

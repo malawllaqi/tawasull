@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  db:
+    container_name: db
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+
+  api:
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile.dev
+    container_name: tawasull-api-dev
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://postgres:password@db:5432/postgres
+    command: >
+      sh -c "
+        cd /app/packages/db && pnpm db:migrate &&
+        cd /app && npx nodemon -w /app/packages/db/src/migrations -e sql -x 'cd /app/packages/db && pnpm db:migrate' & 
+        cd /app/apps/api && pnpm dev
+      "
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/packages/auth/node_modules
+      - /app/apps/api/node_modules
+    depends_on:
+      - db
+
+volumes:
+  pgdata:

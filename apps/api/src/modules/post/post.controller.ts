@@ -4,8 +4,20 @@ import type { z } from "zod";
 import { httpError } from "@/utils/http";
 import { logger } from "@/utils/logger";
 import type { PostgresErrorType } from "@/utils/types";
-import type { createPostSchema, getPostsSchema } from "./post.schema";
-import { createPost, getPosts } from "./post.service";
+import type {
+	createPostSchema,
+	deletePostSchema,
+	getPostSchema,
+	getPostsSchema,
+	updatePostSchema,
+} from "./post.schema";
+import {
+	createPost,
+	deletePost,
+	getPost,
+	getPosts,
+	updatePost,
+} from "./post.service";
 
 export async function createPostHandler(
 	request: FastifyRequest<{ Body: z.infer<typeof createPostSchema.body> }>,
@@ -51,4 +63,65 @@ export async function getPostsHandler(
 			cause: e.message,
 		});
 	}
+}
+
+export async function getPostHandler(
+	request: FastifyRequest<{ Params: z.infer<typeof getPostSchema.params> }>,
+	reply: FastifyReply,
+) {
+	const { postId } = request.params;
+
+	const result = await getPost({ postId }, request.db);
+
+	if (!result) {
+		return httpError({
+			reply,
+			code: StatusCodes.NOT_FOUND,
+			message: "Post not found",
+		});
+	}
+
+	return reply.status(200).send(result);
+}
+
+export async function updatePostHandler(
+	request: FastifyRequest<{
+		Body: z.infer<typeof updatePostSchema.body>;
+		Params: z.infer<typeof updatePostSchema.params>;
+	}>,
+	reply: FastifyReply,
+) {
+	const input = request.body;
+	const { postId } = request.params;
+	const result = await updatePost({ ...input, postId }, request.db);
+
+	if (!result) {
+		return httpError({
+			reply,
+			code: StatusCodes.NOT_FOUND,
+			message: "Post not found",
+		});
+	}
+
+	return reply.status(200).send(result);
+}
+
+export async function deletePostHandler(
+	request: FastifyRequest<{
+		Params: z.infer<typeof deletePostSchema.params>;
+	}>,
+	reply: FastifyReply,
+) {
+	const { postId } = request.params;
+	const result = await deletePost(postId, request.db);
+
+	if (!result) {
+		return httpError({
+			reply,
+			code: StatusCodes.NOT_FOUND,
+			message: "Post not found",
+		});
+	}
+
+	return reply.status(200).send(result);
 }
