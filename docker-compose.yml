@@ -1,40 +1,26 @@
 version: '3.9'
-
 services:
-  db:
-    container_name: db
-    image: postgres:13
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=postgres
-    networks:
-      - tawasul-network
   api:
-    build:
+    build: 
       context: .
       dockerfile: ./apps/api/Dockerfile
-    container_name: tawasull-api
-    restart: unless-stopped
-    environment:
-      - DATABASE_URL=postgres://postgres:password@db:5432/postgres
+      args:
+        NODE_ENV: production
+    restart: always
+    env_file:
+      - apps/api/.env
     ports:
       - 3000:3000
     volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/packages/auth/node_modules
-      - /app/apps/api/node_modules
-    networks:
-      - tawasul-network
-    depends_on:
-      - db
-networks:
-  tawasul-network:
-    driver: bridge
+      - api_uploads:/app/uploads
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8080:8080
+
 volumes:
-  pgdata:
+  api_uploads:
+    driver: local

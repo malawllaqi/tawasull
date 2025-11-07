@@ -1,4 +1,3 @@
-import { auth } from "@tawasull/auth";
 import type { FastifyInstance } from "fastify";
 
 export async function authRouter(server: FastifyInstance) {
@@ -17,7 +16,10 @@ export async function authRouter(server: FastifyInstance) {
 					headers,
 					body: request.body ? JSON.stringify(request.body) : undefined,
 				});
+
+				const auth = request.auth;
 				const response = await auth.handler(req);
+
 				reply.status(response.status);
 				response.headers.forEach((value, key) => reply.header(key, value));
 

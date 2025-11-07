@@ -1,23 +1,43 @@
 FROM node:22-alpine AS base
-
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Development stage
-FROM base AS development
+# =============================== BUILDER STAGE ===============================
+FROM base as builder
+RUN apk update
+
+WORKDIR /app
+RUN npm i -g turbo
+COPY . .
+
+RUN turbo prune --scope=api --docker
+
+# =============================== INSTALLER STAGE ===============================
+FROM base AS installer
+RUN apk update
+
 WORKDIR /app
 
-# Copy workspace files
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-COPY packages ./packages
-COPY apps/api ./apps/api
+COPY .gitignore .gitignore
+COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+RUN pnpm install
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
 
-WORKDIR /app/apps/api
+# Build the project and its dependencies
+COPY --from=builder /app/out/full/ .
+COPY turbo.json turbo.json
+COPY tsconfig.base.json tsconfig.base.json
+RUN pnpm run build --filter=api
 
-EXPOSE 3000
+# Create non-root user
+FROM base AS runner
+WORKDIR /app
 
-CMD ["pnpm", "dev"]
+# Don't run production as root
+RUN addgroup --system --gid 1001 fastifyjs
+RUN adduser --system --uid 1001 fastifyjs
+USER fastifyjs
+COPY --from=installer /app .
 
+CMD node apps/api/dist/main.js
