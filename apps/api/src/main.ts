@@ -1,13 +1,11 @@
 import "dotenv/config";
 import { ping, setupDB } from "@tawasull/db";
-import { config, getEnv } from "./utils/env";
+import { config, env } from "./utils/env";
 import { logger } from "./utils/logger";
 import { buildServer } from "./utils/server";
 
 async function main() {
 	const { db } = await setupDB();
-	const PORT = getEnv("PORT");
-	const HOST = getEnv("HOST");
 
 	try {
 		await ping(db);
@@ -19,7 +17,7 @@ async function main() {
 
 	const server = await buildServer({ db });
 	try {
-		await server.listen({ port: PORT, host: HOST });
+		await server.listen({ port: env.PORT, host: env.HOST });
 	} catch (err) {
 		server.log.error(err);
 		process.exit(1);

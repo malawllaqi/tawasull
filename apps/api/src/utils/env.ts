@@ -6,6 +6,10 @@ const schema = z.object({
 	HOST: z.string(),
 	PRODUCTION_URL: z.string(),
 	BETTER_AUTH_SECRET: z.string(),
+	BUCKET_NAME: z.string(),
+	BUCKET_REGION: z.string(),
+	AWS_ACCESS_KEY: z.string(),
+	AWS_SECRET_ACCESS_KEY: z.string(),
 	NODE_ENV: z
 		.enum(["development", "production", "test"])
 		.default("development"),
@@ -19,6 +23,10 @@ const parsed = schema.safeParse({
 	HOST: process.env.HOST,
 	PRODUCTION_URL: process.env.PRODUCTION_URL,
 	BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
+	BUCKET_NAME: process.env.BUCKET_NAME,
+	BUCKET_REGION: process.env.BUCKET_REGION,
+	AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
+	AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
 	NODE_ENV: process.env.NODE_ENV,
 });
 
@@ -31,11 +39,4 @@ if (!parsed.success) {
 }
 
 export const config = parsed.data;
-
-export function getEnv<K extends keyof Env>(env: K): Env[K] {
-	if (!env || !config[env]) {
-		throw new Error(`💥 environment variable "${env}" is not defined`);
-	}
-
-	return config[env];
-}
+export const env = parsed.data;
