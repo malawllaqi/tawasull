@@ -11,5 +11,5 @@ export function getBaseUrl() {
 	// 	return `https://${env.VERCEL_URL}`;
 	// }
 
-	return `http://localhost:${PORT ?? 3000}`;
+	return `http://localhost:${PORT ?? 3001}`;
 }
