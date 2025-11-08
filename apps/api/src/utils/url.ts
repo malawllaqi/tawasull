@@ -1,9 +1,9 @@
-import { getEnv } from "./env";
+import { env } from "./env";
 
 export function getBaseUrl() {
-	const enviroment = getEnv("NODE_ENV");
-	const PORT = getEnv("PORT");
-	const PRODUCTION_URL = getEnv("PRODUCTION_URL");
+	const enviroment = env.NODE_ENV;
+	const PORT = env.PORT;
+	const PRODUCTION_URL = env.PRODUCTION_URL;
 	if (enviroment === "production") {
 		return `https://${PRODUCTION_URL}`;
 	}

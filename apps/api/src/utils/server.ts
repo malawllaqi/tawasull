@@ -1,4 +1,5 @@
 import fastifyCookie from "@fastify/cookie";
+import fastifyMultipart from "@fastify/multipart";
 import type { Auth, Session } from "@tawasull/auth";
 import type { DB } from "@tawasull/db";
 import Fastify, { type FastifyReply, type FastifyRequest } from "fastify";
@@ -9,7 +10,7 @@ import {
 import { authRouter } from "@/modules/auth/auth.route";
 import { postRouter } from "@/modules/post/post.route";
 import { setupAuth } from "./auth";
-import { getEnv } from "./env";
+import { env } from "./env";
 import { envToLogger } from "./logger";
 
 declare module "fastify" {
@@ -33,14 +34,16 @@ async function authenticate(req: FastifyRequest, reply: FastifyReply) {
 
 export async function buildServer({ db }: { db: DB }) {
 	const fastify = Fastify({
-		logger: envToLogger[getEnv("NODE_ENV")],
+		logger: envToLogger[env.NODE_ENV],
 	});
 
 	// Add schema validator and serializer
 	fastify.setValidatorCompiler(validatorCompiler);
 	fastify.setSerializerCompiler(serializerCompiler);
 
+	fastify.register(fastifyMultipart);
 	fastify.register(fastifyCookie);
+
 	const auth = setupAuth(db);
 
 	fastify.addHook("onRequest", async (req) => {
