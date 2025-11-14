@@ -24,7 +24,7 @@ export async function postRouter(server: FastifyInstance) {
 
 	server.withTypeProvider<ZodTypeProvider>().get("/", {
 		schema: getPostsSchema,
-		preHandler: [server.authenticate],
+		// preHandler: [server.authenticate],
 		handler: getPostsHandler,
 	});
 

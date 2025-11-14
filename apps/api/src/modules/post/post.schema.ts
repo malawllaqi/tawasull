@@ -28,12 +28,15 @@ export const getPostsSchema = {
 			.string()
 			.optional()
 			.transform((val) => (val == null ? undefined : Number.parseInt(val, 10))),
-		cursor: z.string().optional(),
+		page: z.coerce.number().default(1),
 	}),
 	response: {
 		200: z.object({
 			items: z.array(createSelectSchema(post)),
-			nextCursor: z.string(),
+			totalPages: z.number(),
+			totalItems: z.number(),
+			currentPage: z.number(),
+			hasMore: z.boolean(),
 		}),
 		...errorResponses,
 	},

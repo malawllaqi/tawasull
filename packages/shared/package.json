@@ -1,0 +1,21 @@
+{
+  "name": "@tawasull/shared",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./src/*.ts"
+    }
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsdown"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "tsdown": "catalog:"
+  }
+}

@@ -26,7 +26,7 @@ beforeAll(async () => {
 
 	const migrationsFolder = path.resolve(
 		__dirname,
-		"../../../../packages/db/src/migrations",
+		"../../../../packages/db/src/migrations"
 	);
 
 	await migrate(db, {

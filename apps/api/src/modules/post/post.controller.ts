@@ -21,14 +21,14 @@ import {
 
 export async function createPostHandler(
 	request: FastifyRequest<{ Body: z.infer<typeof createPostSchema.body> }>,
-	reply: FastifyReply,
+	reply: FastifyReply
 ) {
 	const { content } = request.body;
 
 	try {
 		const result = await createPost(
 			{ content, userId: request.user.id },
-			request.db,
+			request.db
 		);
 
 		reply.status(201).send(result);
@@ -46,11 +46,12 @@ export async function getPostsHandler(
 	request: FastifyRequest<{
 		Querystring: z.infer<typeof getPostsSchema.querystring>;
 	}>,
-	reply: FastifyReply,
+	reply: FastifyReply
 ) {
-	const { limit, cursor } = request.query;
+	const { limit, page } = request.query;
+
 	try {
-		const result = await getPosts({ cursor, limit }, request.db);
+		const result = await getPosts({ page, limit }, request.db);
 
 		return reply.status(200).send(result);
 	} catch (error) {
@@ -67,7 +68,7 @@ export async function getPostsHandler(
 
 export async function getPostHandler(
 	request: FastifyRequest<{ Params: z.infer<typeof getPostSchema.params> }>,
-	reply: FastifyReply,
+	reply: FastifyReply
 ) {
 	const { postId } = request.params;
 
@@ -89,7 +90,7 @@ export async function updatePostHandler(
 		Body: z.infer<typeof updatePostSchema.body>;
 		Params: z.infer<typeof updatePostSchema.params>;
 	}>,
-	reply: FastifyReply,
+	reply: FastifyReply
 ) {
 	const input = request.body;
 	const { postId } = request.params;
@@ -110,7 +111,7 @@ export async function deletePostHandler(
 	request: FastifyRequest<{
 		Params: z.infer<typeof deletePostSchema.params>;
 	}>,
-	reply: FastifyReply,
+	reply: FastifyReply
 ) {
 	const { postId } = request.params;
 	const result = await deletePost(postId, request.db);

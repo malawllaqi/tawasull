@@ -11,7 +11,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
 export async function setupDB(url?: string) {
-	if (!url && !process.env.DATABASE_URL) {
+	if (!(url || process.env.DATABASE_URL)) {
 		throw new Error("DATABASE_URL is not set");
 	}
 
@@ -30,5 +30,5 @@ export async function ping(db: DB) {
 export type DB = Awaited<ReturnType<typeof setupDB>>["db"];
 export type Client = Awaited<ReturnType<typeof setupDB>>["client"];
 
-export * from "drizzle-orm";
 export { migrate } from "drizzle-orm/node-postgres/migrator";
+export * from "drizzle-orm/sql";

@@ -1,11 +1,11 @@
-import { relations, sql } from "drizzle-orm";
+import { type InferInsertModel, relations, sql } from "drizzle-orm";
 import { pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 
 const timestamps = {
 	createdAt: timestamp().defaultNow().notNull(),
 	updatedAt: timestamp({ mode: "date", withTimezone: true }).$onUpdateFn(
-		() => sql`now()`,
+		() => sql`now()`
 	),
 };
 
@@ -45,3 +45,5 @@ export const postMediaRelations = relations(postMedia, ({ one }) => ({
 		references: [post.id],
 	}),
 }));
+
+export type PostModel = InferInsertModel<typeof post>;

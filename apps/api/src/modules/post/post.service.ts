@@ -1,18 +1,8 @@
-import {
-	type DB,
-	desc,
-	eq,
-	gt,
-	type InferInsertModel,
-	sql,
-} from "@tawasull/db";
-import { post } from "@tawasull/db/schema";
+import { type DB, desc, eq, sql } from "@tawasull/db";
+import { type PostModel, post } from "@tawasull/db/schema";
 import { logger } from "@/utils/logger";
 
-export async function createPost(
-	input: Omit<InferInsertModel<typeof post>, "">,
-	db: DB,
-) {
+export async function createPost(input: Omit<PostModel, "">, db: DB) {
 	try {
 		const result = await db
 			.insert(post)
@@ -29,27 +19,32 @@ export async function createPost(
 
 export async function getPosts(
 	{
-		cursor,
+		page,
 		limit = 20,
 	}: {
 		limit?: number;
-		cursor?: string;
+		page: number;
 	},
-	db: DB,
+	db: DB
 ) {
+	const pageSize = Math.min(limit, 20);
+
 	try {
 		const result = await db
 			.select()
 			.from(post)
-			.where(cursor ? gt(post.id, cursor) : undefined)
-			.limit(Math.min(limit, 20))
-			.orderBy(desc(post.createdAt));
+			.orderBy(desc(post.createdAt))
+			.limit(pageSize)
+			.offset((page - 1) * pageSize);
 
-		const nextPage = result[result.length - 1]?.id;
+		const count = await db.$count(post);
 
 		return {
 			items: result,
-			nextCursor: nextPage,
+			totalItems: count,
+			totalPages: Math.ceil(count / pageSize),
+			currentPage: page,
+			hasMore: page * pageSize < count,
 		};
 	} catch (error) {
 		const message = error instanceof Error ? error.message : "Unknown error";
@@ -73,10 +68,10 @@ export async function getPost({ postId }: { postId: string }, db: DB) {
 }
 
 export async function updatePost(
-	input: Partial<Pick<InferInsertModel<typeof post>, "content">> & {
+	input: Partial<Pick<PostModel, "content">> & {
 		postId: string;
 	},
-	db: DB,
+	db: DB
 ) {
 	try {
 		const { postId, ...rest } = input;
