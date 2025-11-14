@@ -1,4 +1,5 @@
 import fastifyCookie from "@fastify/cookie";
+import cors from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import type { Auth, Session } from "@tawasull/auth";
 import type { DB } from "@tawasull/db";
@@ -10,6 +11,7 @@ import {
 import { authRouter } from "@/modules/auth/auth.route";
 import { postRouter } from "@/modules/post/post.route";
 import { setupAuth } from "./auth";
+import { corsOptions } from "./cors";
 import { env } from "./env";
 import { envToLogger } from "./logger";
 
@@ -41,6 +43,7 @@ export async function buildServer({ db }: { db: DB }) {
 	fastify.setValidatorCompiler(validatorCompiler);
 	fastify.setSerializerCompiler(serializerCompiler);
 
+	fastify.register(cors, corsOptions);
 	fastify.register(fastifyMultipart);
 	fastify.register(fastifyCookie);
 
@@ -67,9 +70,7 @@ export async function buildServer({ db }: { db: DB }) {
 	fastify.after(() => {
 		fastify.register(authRouter);
 		fastify.register(postRouter, { prefix: "/api/v1/post" });
-		fastify.get("/healthcheck", async () => {
-			return { status: "ok" };
-		});
+		fastify.get("/healthcheck", async () => ({ status: "ok" }));
 	});
 
 	return fastify;

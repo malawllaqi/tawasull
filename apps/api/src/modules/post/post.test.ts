@@ -14,7 +14,7 @@ async function getCookie(app: FastifyInstance) {
 
 	await createUser(
 		{ email, password, name: displayName, username },
-		setupAuth(db),
+		setupAuth(db)
 	);
 
 	const loginResponse = await app.inject({

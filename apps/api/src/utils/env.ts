@@ -2,9 +2,11 @@ import { z } from "zod";
 
 const schema = z.object({
 	DATABASE_URL: z.string(),
+	DEV_DATABASE_URL: z.string(),
 	PORT: z.coerce.number(),
 	HOST: z.string(),
 	PRODUCTION_URL: z.string(),
+	CLIENT_ORIGIN: z.string(),
 	BETTER_AUTH_SECRET: z.string(),
 	BUCKET_NAME: z.string(),
 	BUCKET_REGION: z.string(),
@@ -19,9 +21,11 @@ export type Env = z.infer<typeof schema>;
 
 const parsed = schema.safeParse({
 	DATABASE_URL: process.env.DATABASE_URL,
+	DEV_DATABASE_URL: process.env.DEV_DATABASE_URL,
 	PORT: process.env.PORT,
 	HOST: process.env.HOST,
 	PRODUCTION_URL: process.env.PRODUCTION_URL,
+	CLIENT_ORIGIN: process.env.CLIENT_ORIGIN,
 	BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
 	BUCKET_NAME: process.env.BUCKET_NAME,
 	BUCKET_REGION: process.env.BUCKET_REGION,
