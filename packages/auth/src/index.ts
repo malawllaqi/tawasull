@@ -3,14 +3,13 @@ import * as schema from "@tawasull/db/schema/auth";
 import { type BetterAuthOptions, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { openAPI, username } from "better-auth/plugins";
-import { createAuthClient } from "better-auth/react"; // make sure to import from better-auth/react
 
 const db = (await setupDB()).db;
 
 export const auth = betterAuth<BetterAuthOptions>({
 	database: drizzleAdapter(db, {
 		provider: "pg",
-		schema: schema,
+		schema,
 	}),
 	trustedOrigins: [process.env.CORS_ORIGIN || ""],
 	emailAndPassword: {
@@ -36,7 +35,7 @@ export function initAuth(options: {
 	const config = {
 		database: drizzleAdapter(options.db, {
 			provider: "pg",
-			schema: schema,
+			schema,
 		}),
 		trustedOrigins: [process.env.CORS_ORIGIN || ""],
 		emailAndPassword: {
