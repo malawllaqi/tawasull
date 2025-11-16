@@ -26,5 +26,10 @@ export const logger = pino({
 			colorize: true,
 		},
 	},
-	redact: ["DATABASE_URL"],
+	redact: [
+		"DATABASE_URL",
+		"AWS_ACCESS_KEY",
+		"AWS_SECRET_ACCESS_KEY",
+		"BETTER_AUTH_SECRET",
+	],
 });

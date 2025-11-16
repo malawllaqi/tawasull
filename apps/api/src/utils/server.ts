@@ -70,7 +70,7 @@ export async function buildServer({ db }: { db: DB }) {
 	fastify.after(() => {
 		fastify.register(authRouter);
 		fastify.register(postRouter, { prefix: "/api/v1/post" });
-		fastify.get("/healthcheck", async () => ({ status: "ok" }));
+		fastify.get("/health", async () => ({ status: "ok" }));
 	});
 
 	return fastify;
