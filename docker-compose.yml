@@ -11,8 +11,7 @@ services:
       - apps/api/.env
     ports:
       - 3001:3001
-    # volumes:
-    #   - api_uploads:/app/uploads
+
   dozzle:
     container_name: dozzle
     image: amir20/dozzle:latest
@@ -20,6 +19,3 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - 8080:8080
-# volumes:
-#   api_uploads:
-#     driver: local
