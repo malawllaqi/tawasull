@@ -37,6 +37,14 @@ export function initAuth(options: {
 			provider: "pg",
 			schema,
 		}),
+		user: {
+			additionalFields: {
+				username: {
+					type: "string",
+					defaultValue: `user${Math.floor(Math.random() * 1_000_000_000)}`,
+				},
+			},
+		},
 		trustedOrigins: [process.env.CORS_ORIGIN || ""],
 		emailAndPassword: {
 			enabled: true,

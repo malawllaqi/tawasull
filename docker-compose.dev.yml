@@ -37,20 +37,20 @@ services:
     depends_on:
       - db
 
-  web:
-    build:
-      context: .
-      dockerfile: ./apps/web/Dockerfile.dev
-    container_name: tawasul-web-dev
-    # restart: unless-stopped
-    ports:
-      - 3000:3000
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/apps/web/node_modules
-    depends_on:
-      - api
+  # web:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/web/Dockerfile.dev
+  #   container_name: tawasul-web-dev
+  #   # restart: unless-stopped
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #     - /app/apps/web/node_modules
+  #   depends_on:
+  #     - api
 
 volumes:
   pgdata:

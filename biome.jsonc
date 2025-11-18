@@ -38,7 +38,9 @@
     "rules": {
       "recommended": true,
       "correctness": {
-        "useExhaustiveDependencies": "info"
+        "useExhaustiveDependencies": "info",
+        "useImageSize": "off",
+        "noChildrenProp": "off"
       },
       "nursery": {
         "noShadow": "off",
@@ -67,6 +69,9 @@
         "useNumberNamespace": "error",
         "noInferrableTypes": "error",
         "noUselessElse": "error"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "off"
       },
       "performance": {
         "noNamespaceImport": "off",

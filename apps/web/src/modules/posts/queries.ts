@@ -4,7 +4,7 @@ import {
 	type UseQueryOptions,
 } from "@tanstack/react-query";
 import type { PostAPIResponse, PostQueryParams } from "@tawasull/shared";
-import { getPosts } from "./api";
+import { getPosts } from "./functions";
 
 export function createPostsQueryOptions<
 	TData = PostAPIResponse,
