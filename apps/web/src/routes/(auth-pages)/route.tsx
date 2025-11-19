@@ -3,7 +3,7 @@ import { authQueryOptions } from "@/modules/auth/queries";
 
 export const Route = createFileRoute("/(auth-pages)")({
 	beforeLoad: async ({ context }) => {
-		const REDIRECT_URL = "/";
+		const REDIRECT_URL = "/home";
 		const user = await context.queryClient.ensureQueryData({
 			...authQueryOptions(),
 			revalidateIfStale: true,

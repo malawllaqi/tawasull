@@ -23,7 +23,7 @@ export function SignInSocial(props: SignInSocialProps) {
 					onError: ({ error }) => {
 						toast.error(
 							error.message ||
-								`An error occurred during ${providerLabel} sign-in.`
+								`An error occurred during ${[props.provider]} sign-in.`
 						);
 					},
 				}

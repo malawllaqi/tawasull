@@ -1,5 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SiteHeader } from "@/components/layout/site-header";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { authQueryOptions } from "@/modules/auth/queries";
 
 export const Route = createFileRoute("/(authenticated)")({
@@ -10,7 +12,6 @@ export const Route = createFileRoute("/(authenticated)")({
 			revalidateIfStale: true,
 		});
 
-		console.log(user);
 		if (!user) {
 			throw redirect({ to: "/login" });
 		}
@@ -22,8 +23,18 @@ export const Route = createFileRoute("/(authenticated)")({
 export function AppLayout() {
 	return (
 		<div className="">
-			<SiteHeader />
-			<Outlet />
+			<SidebarProvider>
+				<AppSidebar />
+				<SidebarInset>
+					<SiteHeader />
+					<main className="flex">
+						<div className="flex-1">
+							<Outlet />
+						</div>
+						<div className="w-64 bg-card" />
+					</main>
+				</SidebarInset>
+			</SidebarProvider>
 		</div>
 	);
 }

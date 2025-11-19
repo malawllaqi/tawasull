@@ -1,30 +1,8 @@
-import { type DB, setupDB } from "@tawasull/db";
+import type { DB } from "@tawasull/db";
 import * as schema from "@tawasull/db/schema/auth";
 import { type BetterAuthOptions, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { openAPI, username } from "better-auth/plugins";
-
-const db = (await setupDB()).db;
-
-export const auth = betterAuth<BetterAuthOptions>({
-	database: drizzleAdapter(db, {
-		provider: "pg",
-		schema,
-	}),
-	trustedOrigins: [process.env.CORS_ORIGIN || ""],
-	emailAndPassword: {
-		enabled: true,
-	},
-	plugins: [username(), openAPI()],
-	advanced: {
-		disableOriginCheck: true,
-		defaultCookieAttributes: {
-			sameSite: "none",
-			secure: true,
-			httpOnly: true,
-		},
-	},
-});
 
 export function initAuth(options: {
 	baseUrl: string;
@@ -49,9 +27,10 @@ export function initAuth(options: {
 			google: {
 				clientId: process.env.GOOGLE_CLIENT_ID as string,
 				clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+				redirectURI: "http://localhost:3001/api/auth/callback/google",
 			},
 		},
-		trustedOrigins: [process.env.CORS_ORIGIN || ""],
+		trustedOrigins: [process.env.WEBAPP_URL || ""],
 		emailAndPassword: {
 			enabled: true,
 		},

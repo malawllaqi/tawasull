@@ -137,7 +137,7 @@ export function SigninForm() {
 					</FieldSeparator>
 					<Field className="grid grid-cols-2 gap-4">
 						<SignInSocial
-							callbackURL={redirectUrl}
+							callbackURL={`${import.meta.env.VITE_WEBAPP_URL}/${redirectUrl}`}
 							disabled={isPending}
 							icon={
 								<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

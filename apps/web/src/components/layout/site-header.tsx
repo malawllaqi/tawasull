@@ -1,14 +1,21 @@
-import SignOutBtn from "@/modules/auth/components/sign-out-btn";
+import { Separator } from "../ui/separator";
+import { SidebarTrigger } from "../ui/sidebar";
 import { ThemeToggle } from "./theme-toggle";
+import { UserNav } from "./user-nav";
 
 export function SiteHeader() {
 	return (
-		<div className="flex items-center justify-between p-4">
-			<div className="" />
-			<div className="flex items-center space-x-4">
-				<SignOutBtn />
+		<header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b bg-sidebar transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+			<div className="flex items-center gap-2 px-4">
+				<SidebarTrigger className="-ml-1" />
+				<Separator className="mr-2 h-4" orientation="vertical" />
+			</div>
+
+			<div className="flex items-center gap-2 px-4">
+				<div className="hidden md:flex" />
+				<UserNav />
 				<ThemeToggle />
 			</div>
-		</div>
+		</header>
 	);
 }
