@@ -1,54 +1,62 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import type { QueryClient } from "@tanstack/react-query";
+import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
+import {
+	createRootRouteWithContext,
+	HeadContent,
+	Scripts,
+} from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { QueryProvider } from "@/components/providers/query-provider";
-import { ThemeProvider } from "@/components/providers/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
+import { AppProviders } from "@/components/providers/providers";
+import { authQueryOptions } from "@/modules/auth/queries";
 import appCss from "../styles.css?url";
 
-export const Route = createRootRoute({
-	head: () => ({
-		meta: [
-			{
-				charSet: "utf-8",
-			},
-			{
-				name: "viewport",
-				content: "width=device-width, initial-scale=1",
-			},
-			{
-				title: "TanStack Start Starter",
-			},
-		],
-		links: [
-			{
-				rel: "stylesheet",
-				href: appCss,
-			},
-		],
-	}),
-
-	shellComponent: RootDocument,
-});
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
+	{
+		beforeLoad: ({ context }) => {
+			context.queryClient.prefetchQuery(authQueryOptions());
+		},
+		head: () => ({
+			meta: [
+				{
+					charSet: "utf-8",
+				},
+				{
+					name: "viewport",
+					content: "width=device-width, initial-scale=1",
+				},
+				{
+					title: "TanStack Start Starter",
+				},
+			],
+			links: [
+				{
+					rel: "stylesheet",
+					href: appCss,
+				},
+			],
+		}),
+		shellComponent: RootDocument,
+	}
+);
 
 function RootDocument({ children }: { children: React.ReactNode }) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<head>
 				<HeadContent />
 			</head>
 			<body>
-				<ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-					<QueryProvider>{children}</QueryProvider>
-					<Toaster />
-				</ThemeProvider>
+				<AppProviders>{children}</AppProviders>
+
 				<TanStackDevtools
-					config={{
-						position: "bottom-right",
-					}}
 					plugins={[
 						{
-							name: "Tanstack Router",
+							name: "TanStack Query",
+							render: <ReactQueryDevtoolsPanel />,
+						},
+						{
+							name: "TanStack Router",
 							render: <TanStackRouterDevtoolsPanel />,
 						},
 					]}

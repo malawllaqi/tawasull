@@ -12,8 +12,6 @@ import { authRouter } from "@/modules/auth/auth.route";
 import { postRouter } from "@/modules/post/post.route";
 import { setupAuth } from "./auth";
 import { corsOptions } from "./cors";
-import { env } from "./env";
-import { envToLogger } from "./logger";
 
 declare module "fastify" {
 	interface FastifyRequest {
@@ -36,7 +34,7 @@ async function authenticate(req: FastifyRequest, reply: FastifyReply) {
 
 export async function buildServer({ db }: { db: DB }) {
 	const fastify = Fastify({
-		logger: envToLogger[env.NODE_ENV],
+		// logger: envToLogger[env.NODE_ENV],
 	});
 
 	// Add schema validator and serializer

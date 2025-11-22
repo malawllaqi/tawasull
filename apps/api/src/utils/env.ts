@@ -9,9 +9,12 @@ const schema = z.object({
 	CLIENT_ORIGIN: z.string(),
 	BETTER_AUTH_SECRET: z.string(),
 	BUCKET_NAME: z.string(),
+	WEBAPP_URL: z.string(),
 	BUCKET_REGION: z.string(),
 	AWS_ACCESS_KEY: z.string(),
 	AWS_SECRET_ACCESS_KEY: z.string(),
+	GOOGLE_CLIENT_ID: z.string(),
+	GOOGLE_CLIENT_SECRET: z.string(),
 	NODE_ENV: z
 		.enum(["development", "production", "test"])
 		.default("development"),
@@ -28,9 +31,12 @@ const parsed = schema.safeParse({
 	CLIENT_ORIGIN: process.env.CLIENT_ORIGIN,
 	BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
 	BUCKET_NAME: process.env.BUCKET_NAME,
+	WEBAPP_URL: process.env.WEBAPP_URL,
 	BUCKET_REGION: process.env.BUCKET_REGION,
 	AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
 	AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+	GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+	GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
 	NODE_ENV: process.env.NODE_ENV,
 });
 

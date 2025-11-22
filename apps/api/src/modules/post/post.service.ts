@@ -30,12 +30,20 @@ export async function getPosts(
 	const pageSize = Math.min(limit, 20);
 
 	try {
-		const result = await db
-			.select()
-			.from(post)
-			.orderBy(desc(post.createdAt))
-			.limit(pageSize)
-			.offset((page - 1) * pageSize);
+		const result = await db.query.post.findMany({
+			orderBy: desc(post.createdAt),
+			limit: pageSize,
+			offset: (page - 1) * pageSize,
+			with: {
+				user: {
+					columns: {
+						username: true,
+						image: true,
+						name: true,
+					},
+				},
+			},
+		});
 
 		const count = await db.$count(post);
 

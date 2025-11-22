@@ -1,7 +1,8 @@
 import type { FastifyCorsOptions } from "@fastify/cors";
+import { env } from "./env";
 
 export const corsOptions: FastifyCorsOptions = {
-	origin: process.env.CLIENT_ORIGIN || "http://localhost:3000",
+	origin: env.WEBAPP_URL || "http://localhost:3000",
 	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 	allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
 	credentials: true,

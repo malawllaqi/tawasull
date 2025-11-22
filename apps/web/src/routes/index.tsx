@@ -1,12 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { InfinitePosts } from "@/modules/posts/components/infinite-posts";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/")({ component: App });
-
-function App() {
-	return (
-		<div className="min-h-screen">
-			<InfinitePosts />
-		</div>
-	);
-}
+export const Route = createFileRoute("/")({
+	beforeLoad: () => {
+		throw redirect({
+			to: "/home",
+		});
+	},
+});

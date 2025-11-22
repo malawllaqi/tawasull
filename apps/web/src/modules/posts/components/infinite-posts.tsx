@@ -1,32 +1,33 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { useInView } from "react-intersection-observer";
+import { useIntersectionObserver } from "usehooks-ts";
+
 import { Spinner } from "@/components/ui/spinner";
-import { createPostsInfiniteQueryOptions } from "../lib/query";
+import { createPostsInfiniteQueryOptions } from "../queries";
 import { PostPreview } from "./post-preview";
 
 // type InfinitePostsProps = {};
 export function InfinitePosts() {
-	const { data, fetchNextPage, isFetchingNextPage } = useInfiniteQuery(
-		createPostsInfiniteQueryOptions()
-	);
+	const { data, fetchNextPage, isFetchingNextPage } = useSuspenseInfiniteQuery({
+		...createPostsInfiniteQueryOptions(),
+	});
+	const { isIntersecting, ref } = useIntersectionObserver({
+		threshold: 0.5,
+	});
 
-	const { ref, inView } = useInView({});
 	const posts = data?.pages.flatMap((page) => page.items);
 
 	useEffect(() => {
-		if (inView) {
+		if (isIntersecting) {
 			fetchNextPage();
 		}
-	}, [fetchNextPage, inView]);
+	}, [fetchNextPage, isIntersecting]);
 
 	return (
-		<div className="py-10">
-			<div className="mx-auto flex max-w-xl flex-col space-y-4">
-				{posts?.length
-					? posts?.map((p) => <PostPreview key={p.id} post={p} />)
-					: null}
-			</div>
+		<div className="space-y-4 py-10">
+			{posts?.length
+				? posts?.map((p) => <PostPreview key={p.id} post={p} />)
+				: null}
 			{isFetchingNextPage ? <Spinner /> : null}
 			<div ref={ref} />
 		</div>

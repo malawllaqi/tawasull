@@ -38,9 +38,12 @@
     "rules": {
       "recommended": true,
       "correctness": {
-        "useExhaustiveDependencies": "info"
+        "useExhaustiveDependencies": "info",
+        "useImageSize": "off",
+        "noChildrenProp": "off"
       },
       "nursery": {
+        "useMaxParams": "off",
         "noShadow": "off",
         "useSortedClasses": {
           "level": "warn",
@@ -52,9 +55,12 @@
       },
       "suspicious": {
         "useIterableCallbackReturn": "off",
-        "useAwait": "off"
+        "useAwait": "off",
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off"
       },
       "style": {
+        "noNestedTernary": "off",
         "useBlockStatements": "off",
         "useConsistentTypeDefinitions": "off",
         "noParameterAssign": "error",
@@ -68,9 +74,15 @@
         "noInferrableTypes": "error",
         "noUselessElse": "error"
       },
+      "a11y": {
+        "noSvgWithoutTitle": "off"
+      },
       "performance": {
         "noNamespaceImport": "off",
         "noBarrelFile": "off"
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off"
       }
     }
   },
