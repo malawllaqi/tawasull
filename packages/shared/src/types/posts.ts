@@ -4,6 +4,11 @@ export type Post = {
 	userId: string;
 	createdAt: Date;
 	updatedAt: Date;
+	user: {
+		name: string;
+		image: string | null;
+		username: string | null;
+	};
 };
 
 export type PostAPIResponse = {

@@ -43,6 +43,7 @@
         "noChildrenProp": "off"
       },
       "nursery": {
+        "useMaxParams": "off",
         "noShadow": "off",
         "useSortedClasses": {
           "level": "warn",
@@ -54,9 +55,12 @@
       },
       "suspicious": {
         "useIterableCallbackReturn": "off",
-        "useAwait": "off"
+        "useAwait": "off",
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off"
       },
       "style": {
+        "noNestedTernary": "off",
         "useBlockStatements": "off",
         "useConsistentTypeDefinitions": "off",
         "noParameterAssign": "error",
@@ -76,6 +80,9 @@
       "performance": {
         "noNamespaceImport": "off",
         "noBarrelFile": "off"
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": "off"
       }
     }
   },

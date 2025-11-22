@@ -45,7 +45,8 @@ export function UserNav() {
 							referrerPolicy="no-referrer"
 							src={data?.user?.image || ""}
 						/>
-						<AvatarFallback>
+						{/* <AvatarFallback delayMs={0}> */}
+						<AvatarFallback suppressHydrationWarning>
 							{data?.user?.name
 								.split(" ")
 								.map((n) => n[0])

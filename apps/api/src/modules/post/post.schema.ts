@@ -1,4 +1,4 @@
-import { post } from "@tawasull/db/schema";
+import { post, user } from "@tawasull/db/schema";
 import {
 	createInsertSchema,
 	createSelectSchema,
@@ -32,7 +32,18 @@ export const getPostsSchema = {
 	}),
 	response: {
 		200: z.object({
-			items: z.array(createSelectSchema(post)),
+			items: z.array(
+				createSelectSchema(post).extend({
+					user: createSelectSchema(user).omit({
+						createdAt: true,
+						displayUsername: true,
+						id: true,
+						email: true,
+						emailVerified: true,
+						updatedAt: true,
+					}),
+				})
+			),
 			totalPages: z.number(),
 			totalItems: z.number(),
 			currentPage: z.number(),

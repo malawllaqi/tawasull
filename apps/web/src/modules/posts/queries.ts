@@ -4,7 +4,28 @@ import {
 	type UseQueryOptions,
 } from "@tanstack/react-query";
 import type { PostAPIResponse, PostQueryParams } from "@tawasull/shared";
-import { getPosts } from "./functions";
+import { getCookieHeaders } from "@/functions/auth";
+import { api } from "@/lib/ky";
+
+export async function getPosts(
+	queryOps: PostQueryParams = {}
+): Promise<PostAPIResponse> {
+	const { page } = queryOps;
+	const queryParams = new URLSearchParams();
+
+	if (page) queryParams.append("page", page.toString());
+	const queryString = queryParams.toString();
+	try {
+		const res = await api.get(`post${queryString ? `?${queryString}` : ""}`, {
+			headers: await getCookieHeaders(),
+		});
+
+		return res.json();
+	} catch (err) {
+		console.log(err);
+		throw err;
+	}
+}
 
 export function createPostsQueryOptions<
 	TData = PostAPIResponse,

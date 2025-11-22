@@ -33,6 +33,7 @@ services:
       - .:/app
       - /app/node_modules
       - /app/packages/auth/node_modules
+      - /app/packages/db/node_modules # Added this line
       - /app/apps/api/node_modules
     depends_on:
       - db

@@ -31,17 +31,20 @@ export function PostPreview({ post }: PostPreviewProps) {
 					<div className="relative">
 						<Avatar>
 							<AvatarImage
-								alt="@shadcn"
+								alt={`@${post.user.username}`}
 								className="h-11 w-11 object-cover"
-								src="https://github.com/shadcn.png"
+								// src="https://github.com/shadcn.png"
+								src={post.user.image ?? ""}
 							/>
-							<AvatarFallback>CN</AvatarFallback>
+							<AvatarFallback className="uppercase">
+								{post.user.name[0]}
+							</AvatarFallback>
 						</Avatar>
 						<Badge className="absolute right-01 bottom-0 m-0 h-3 w-3 rounded-full border-2 border-card bg-green-400 p-0" />
 					</div>
 					<div className="flex flex-col space-y-1 text-xs">
-						<p>Mohamed Alawlaqi</p>
-						<span className="text-muted-foreground">@malawlaqi</span>
+						<p>{post.user.name}</p>
+						<span className="text-muted-foreground">@{post.user.username}</span>
 					</div>
 				</div>
 
