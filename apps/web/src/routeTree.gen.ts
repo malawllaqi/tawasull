@@ -15,6 +15,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as authenticatedHomeRouteImport } from './routes/(authenticated)/home'
 import { Route as authPagesSignupRouteImport } from './routes/(auth-pages)/signup'
 import { Route as authPagesLoginRouteImport } from './routes/(auth-pages)/login'
+import { Route as authenticatedSettingsRouteRouteImport } from './routes/(authenticated)/settings/route'
+import { Route as authenticatedSettingsIndexRouteImport } from './routes/(authenticated)/settings/index'
+import { Route as authenticatedSettingsProfileRouteImport } from './routes/(authenticated)/settings/profile'
 
 const authenticatedRouteRoute = authenticatedRouteRouteImport.update({
   id: '/(authenticated)',
@@ -44,41 +47,77 @@ const authPagesLoginRoute = authPagesLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => authPagesRouteRoute,
 } as any)
+const authenticatedSettingsRouteRoute =
+  authenticatedSettingsRouteRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => authenticatedRouteRoute,
+  } as any)
+const authenticatedSettingsIndexRoute =
+  authenticatedSettingsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => authenticatedSettingsRouteRoute,
+  } as any)
+const authenticatedSettingsProfileRoute =
+  authenticatedSettingsProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
+    getParentRoute: () => authenticatedSettingsRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/settings': typeof authenticatedSettingsRouteRouteWithChildren
   '/login': typeof authPagesLoginRoute
   '/signup': typeof authPagesSignupRoute
   '/home': typeof authenticatedHomeRoute
+  '/settings/profile': typeof authenticatedSettingsProfileRoute
+  '/settings/': typeof authenticatedSettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof authPagesLoginRoute
   '/signup': typeof authPagesSignupRoute
   '/home': typeof authenticatedHomeRoute
+  '/settings/profile': typeof authenticatedSettingsProfileRoute
+  '/settings': typeof authenticatedSettingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/(auth-pages)': typeof authPagesRouteRouteWithChildren
   '/(authenticated)': typeof authenticatedRouteRouteWithChildren
+  '/(authenticated)/settings': typeof authenticatedSettingsRouteRouteWithChildren
   '/(auth-pages)/login': typeof authPagesLoginRoute
   '/(auth-pages)/signup': typeof authPagesSignupRoute
   '/(authenticated)/home': typeof authenticatedHomeRoute
+  '/(authenticated)/settings/profile': typeof authenticatedSettingsProfileRoute
+  '/(authenticated)/settings/': typeof authenticatedSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/signup' | '/home'
+  fullPaths:
+    | '/'
+    | '/settings'
+    | '/login'
+    | '/signup'
+    | '/home'
+    | '/settings/profile'
+    | '/settings/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/signup' | '/home'
+  to: '/' | '/login' | '/signup' | '/home' | '/settings/profile' | '/settings'
   id:
     | '__root__'
     | '/'
     | '/(auth-pages)'
     | '/(authenticated)'
+    | '/(authenticated)/settings'
     | '/(auth-pages)/login'
     | '/(auth-pages)/signup'
     | '/(authenticated)/home'
+    | '/(authenticated)/settings/profile'
+    | '/(authenticated)/settings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -131,6 +170,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authPagesLoginRouteImport
       parentRoute: typeof authPagesRouteRoute
     }
+    '/(authenticated)/settings': {
+      id: '/(authenticated)/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof authenticatedSettingsRouteRouteImport
+      parentRoute: typeof authenticatedRouteRoute
+    }
+    '/(authenticated)/settings/': {
+      id: '/(authenticated)/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof authenticatedSettingsIndexRouteImport
+      parentRoute: typeof authenticatedSettingsRouteRoute
+    }
+    '/(authenticated)/settings/profile': {
+      id: '/(authenticated)/settings/profile'
+      path: '/profile'
+      fullPath: '/settings/profile'
+      preLoaderRoute: typeof authenticatedSettingsProfileRouteImport
+      parentRoute: typeof authenticatedSettingsRouteRoute
+    }
   }
 }
 
@@ -148,11 +208,29 @@ const authPagesRouteRouteWithChildren = authPagesRouteRoute._addFileChildren(
   authPagesRouteRouteChildren,
 )
 
+interface authenticatedSettingsRouteRouteChildren {
+  authenticatedSettingsProfileRoute: typeof authenticatedSettingsProfileRoute
+  authenticatedSettingsIndexRoute: typeof authenticatedSettingsIndexRoute
+}
+
+const authenticatedSettingsRouteRouteChildren: authenticatedSettingsRouteRouteChildren =
+  {
+    authenticatedSettingsProfileRoute: authenticatedSettingsProfileRoute,
+    authenticatedSettingsIndexRoute: authenticatedSettingsIndexRoute,
+  }
+
+const authenticatedSettingsRouteRouteWithChildren =
+  authenticatedSettingsRouteRoute._addFileChildren(
+    authenticatedSettingsRouteRouteChildren,
+  )
+
 interface authenticatedRouteRouteChildren {
+  authenticatedSettingsRouteRoute: typeof authenticatedSettingsRouteRouteWithChildren
   authenticatedHomeRoute: typeof authenticatedHomeRoute
 }
 
 const authenticatedRouteRouteChildren: authenticatedRouteRouteChildren = {
+  authenticatedSettingsRouteRoute: authenticatedSettingsRouteRouteWithChildren,
   authenticatedHomeRoute: authenticatedHomeRoute,
 }
 
