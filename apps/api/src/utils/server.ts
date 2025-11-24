@@ -42,7 +42,10 @@ export async function buildServer({ db }: { db: DB }) {
 	fastify.setSerializerCompiler(serializerCompiler);
 
 	fastify.register(cors, corsOptions);
-	fastify.register(fastifyMultipart);
+	fastify.register(fastifyMultipart, {
+		attachFieldsToBody: true,
+	});
+
 	fastify.register(fastifyCookie);
 
 	const auth = setupAuth(db);

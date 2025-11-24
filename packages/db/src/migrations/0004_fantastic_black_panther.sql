@@ -1,0 +1,1 @@
+ALTER TABLE "post_media" RENAME COLUMN "media_url" TO "url";

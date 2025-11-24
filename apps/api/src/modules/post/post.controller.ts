@@ -23,11 +23,11 @@ export async function createPostHandler(
 	request: FastifyRequest<{ Body: z.infer<typeof createPostSchema.body> }>,
 	reply: FastifyReply
 ) {
-	const { content } = request.body;
+	const { content, files } = request.body;
 
 	try {
 		const result = await createPost(
-			{ content, userId: request.user.id },
+			{ content, userId: request.user.id, files: files || [] },
 			request.db
 		);
 
@@ -114,7 +114,7 @@ export async function deletePostHandler(
 	reply: FastifyReply
 ) {
 	const { postId } = request.params;
-	const result = await deletePost(postId, request.db);
+	const result = await getPost({ postId }, request.db);
 
 	if (!result) {
 		return httpError({
@@ -124,5 +124,15 @@ export async function deletePostHandler(
 		});
 	}
 
-	return reply.status(200).send(result);
+	if (result.userId !== request.user.id) {
+		return httpError({
+			reply,
+			code: StatusCodes.UNAUTHORIZED,
+			message: "Unauthorized",
+		});
+	}
+
+	const deletionResult = await deletePost({ postToDelete: result }, request.db);
+
+	return reply.status(200).send(deletionResult);
 }

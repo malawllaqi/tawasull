@@ -13,6 +13,7 @@ const schema = z.object({
 	BUCKET_REGION: z.string(),
 	AWS_ACCESS_KEY: z.string(),
 	AWS_SECRET_ACCESS_KEY: z.string(),
+	AWS_CF_URL: z.string(),
 	GOOGLE_CLIENT_ID: z.string(),
 	GOOGLE_CLIENT_SECRET: z.string(),
 	NODE_ENV: z
@@ -35,6 +36,7 @@ const parsed = schema.safeParse({
 	BUCKET_REGION: process.env.BUCKET_REGION,
 	AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
 	AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+	AWS_CF_URL: process.env.AWS_CF_URL,
 	GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
 	GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
 	NODE_ENV: process.env.NODE_ENV,

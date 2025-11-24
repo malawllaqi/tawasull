@@ -31,11 +31,11 @@ export const mediaTypeEnum = pgEnum("media_type", ["image", "video"]);
 export const postMedia = pgTable("post_media", {
 	id: uuid("id").notNull().primaryKey().defaultRandom(),
 	objectKey: text("object_key").notNull(),
-	mediaUrl: text("media_url"),
+	url: text("url"),
 	mediaType: mediaTypeEnum().default("image"),
 	postId: uuid("post_id")
 		.notNull()
-		.references(() => post.id),
+		.references(() => post.id, { onDelete: "cascade" }),
 	...timestamps,
 });
 

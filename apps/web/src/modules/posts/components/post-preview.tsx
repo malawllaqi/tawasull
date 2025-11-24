@@ -1,11 +1,5 @@
 import type { Post } from "@tawasull/shared";
-import {
-	Bookmark,
-	Heart,
-	MessageCircle,
-	MoreHorizontal,
-	Repeat2,
-} from "lucide-react";
+import { Bookmark, Heart, MessageCircle, Repeat2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,15 +9,13 @@ import {
 	CardFooter,
 	CardHeader,
 } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { PostMenu } from "./post-menu";
 
 type PostPreviewProps = {
 	post: Post;
 };
 export function PostPreview({ post }: PostPreviewProps) {
-	const placeholderImages = [
-		"https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?auto=format&fit=crop&w=1200&q=80",
-		"https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1200&q=80",
-	];
 	return (
 		<Card className="overflow-hidden">
 			<CardHeader className="flex items-center justify-between">
@@ -33,7 +25,6 @@ export function PostPreview({ post }: PostPreviewProps) {
 							<AvatarImage
 								alt={`@${post.user.username}`}
 								className="h-11 w-11 object-cover"
-								// src="https://github.com/shadcn.png"
 								src={post.user.image ?? ""}
 							/>
 							<AvatarFallback className="uppercase">
@@ -48,25 +39,30 @@ export function PostPreview({ post }: PostPreviewProps) {
 					</div>
 				</div>
 
-				<Button className="" variant={"outline"}>
-					<MoreHorizontal />
-				</Button>
+				<PostMenu post={post} />
 			</CardHeader>
 			<CardContent>
 				<p>{post.content}</p>
-				<div className="grid grid-cols-2 gap-3 pt-4">
-					{placeholderImages.map((image, index) => (
-						<figure
-							className="overflow-hidden rounded-2xl border border-border/60 bg-muted/40"
-							key={image}
-						>
-							<img
-								alt={`Travel highlight ${index + 2}`}
-								className="h-64 w-full object-cover transition-transform duration-700 hover:scale-105"
-								src={image}
-							/>
-						</figure>
-					))}
+				<div
+					className={cn(
+						"grid gap-3 pt-4",
+						post.media.length <= 1 ? "grid-cols-1" : "grid-cols-2"
+					)}
+				>
+					{post.media.length
+						? post.media.map((m) => (
+								<figure
+									className="overflow-hidden rounded-2xl border border-border/60 bg-muted/40"
+									key={m.id}
+								>
+									<img
+										alt={`Travel highlight ${m.id + 2}`}
+										className="h-64 w-full object-cover transition-transform duration-700 hover:scale-105"
+										src={m.url}
+									/>
+								</figure>
+							))
+						: null}
 				</div>
 			</CardContent>
 			<hr />
