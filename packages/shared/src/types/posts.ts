@@ -9,6 +9,7 @@ export type Post = {
 		image: string | null;
 		username: string | null;
 	};
+	media: PostMedia[];
 };
 
 export type PostAPIResponse = {
@@ -23,4 +24,12 @@ export type PostQueryParams = {
 	search?: string;
 	limit?: string;
 	page?: string;
+};
+
+export type PostMedia = {
+	id: string;
+	url: string;
+	objectKey: string;
+	createdAt: Date;
+	updatedAt: Date;
 };

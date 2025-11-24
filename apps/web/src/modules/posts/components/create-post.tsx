@@ -46,8 +46,21 @@ type CreatePostType = z.infer<typeof createPostSchema>;
 export function CreatePost() {
 	const queryClient = useQueryClient();
 	const { mutate, isPending } = useMutation({
-		mutationFn: async (data: CreatePostType) =>
-			await api.post("post", { json: { content: data.content } }).json(),
+		mutationFn: async (data: CreatePostType) => {
+			if (!data.files?.length) {
+				return await api
+					.post("post", { json: { content: data.content } })
+					.json();
+			}
+
+			const formData = new FormData();
+			formData.append("content", data.content);
+
+			for (const file of data.files) {
+				formData.append("files", file);
+			}
+			return await api.post("post", { body: formData }).json();
+		},
 
 		onSuccess: () => {
 			toast.success("post submited!");
@@ -70,8 +83,7 @@ export function CreatePost() {
 			onSubmit: createPostSchema,
 		},
 		onSubmit: ({ value }) => {
-			console.log(value);
-			// mutate({ content: value.content });
+			mutate({ content: value.content, files: value.files });
 		},
 	});
 

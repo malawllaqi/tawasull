@@ -44,10 +44,10 @@ export function AppLayout() {
 					</div>
 				</header>
 				<main className="flex">
-					<div className="flex-1">
+					<div className="flex-1 px-10 md:px-0">
 						<Outlet />
 					</div>
-					<div className="w-64 bg-card" />
+					<div className="hidden w-64 bg-card md:flex" />
 				</main>
 			</SidebarInset>
 		</SidebarProvider>

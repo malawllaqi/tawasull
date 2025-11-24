@@ -1,4 +1,4 @@
-import { post, user } from "@tawasull/db/schema";
+import { post, postMedia, user } from "@tawasull/db/schema";
 import {
 	createInsertSchema,
 	createSelectSchema,
@@ -6,14 +6,29 @@ import {
 } from "drizzle-zod";
 import { z } from "zod";
 import { errorResponses } from "@/utils/http";
+
 export const createPostSchema = {
 	tags: ["post"],
-	body: createInsertSchema(post).omit({
-		id: true,
-		userId: true,
-		createdAt: true,
-		updatedAt: true,
-	}),
+	consumes: ["multipart/form-data"],
+	body: createInsertSchema(post)
+		.pick({ content: true })
+		.extend({
+			files: z
+				.array(
+					z
+						.file()
+						.max(5 * 1024 * 1024)
+						.mime([
+							"image/jpeg",
+							"image/jpg",
+							"image/png",
+							"image/gif",
+							"image/webp",
+							"image/svg+xml",
+						])
+				)
+				.optional(),
+		}),
 	response: {
 		201: createSelectSchema(post),
 		...errorResponses,
@@ -34,14 +49,20 @@ export const getPostsSchema = {
 		200: z.object({
 			items: z.array(
 				createSelectSchema(post).extend({
-					user: createSelectSchema(user).omit({
-						createdAt: true,
-						displayUsername: true,
-						id: true,
-						email: true,
-						emailVerified: true,
-						updatedAt: true,
+					user: createSelectSchema(user).pick({
+						name: true,
+						username: true,
+						image: true,
 					}),
+					media: z
+						.array(
+							createSelectSchema(postMedia).pick({
+								id: true,
+								url: true,
+								objectKey: true,
+							})
+						)
+						.default([]),
 				})
 			),
 			totalPages: z.number(),
@@ -59,7 +80,22 @@ export const getPostSchema = {
 		postId: z.uuid(),
 	}),
 	response: {
-		200: createSelectSchema(post),
+		200: createSelectSchema(post).extend({
+			user: createSelectSchema(user).pick({
+				name: true,
+				username: true,
+				image: true,
+			}),
+			media: z
+				.array(
+					createSelectSchema(postMedia).pick({
+						id: true,
+						url: true,
+						objectKey: true,
+					})
+				)
+				.default([]),
+		}),
 		...errorResponses,
 	},
 };
@@ -82,7 +118,9 @@ export const deletePostSchema = {
 		postId: z.uuid(),
 	}),
 	response: {
-		200: createSelectSchema(post),
+		200: z.object({
+			deletedPost: z.string(),
+		}),
 		...errorResponses,
 	},
 };

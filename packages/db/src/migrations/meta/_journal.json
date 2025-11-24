@@ -29,6 +29,20 @@
       "when": 1762610206186,
       "tag": "0003_absent_gladiator",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1763863323286,
+      "tag": "0004_fantastic_black_panther",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1763945685788,
+      "tag": "0005_nostalgic_piledriver",
+      "breakpoints": true
     }
   ]
 }

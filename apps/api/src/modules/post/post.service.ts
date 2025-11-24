@@ -1,15 +1,37 @@
 import { type DB, desc, eq, sql } from "@tawasull/db";
-import { type PostModel, post } from "@tawasull/db/schema";
+import { type PostModel, post, postMedia } from "@tawasull/db/schema";
+import type { z } from "zod";
+import { env } from "@/utils/env";
 import { logger } from "@/utils/logger";
+import { deleteImage, uploadImage } from "@/utils/s3";
+import type { createPostSchema } from "./post.schema";
 
-export async function createPost(input: Omit<PostModel, "">, db: DB) {
+export async function createPost(
+	input: z.infer<typeof createPostSchema.body> & { userId: string },
+	db: DB
+) {
 	try {
 		const result = await db
 			.insert(post)
-			.values({ ...input })
+			.values({ content: input.content, userId: input.userId })
 			.returning();
 
-		return result[0];
+		const newPost = result[0];
+		if (input?.files && input.files.length > 0 && newPost) {
+			const uploadedFiles = await Promise.all(
+				input.files.map((file) => uploadImage({ file }))
+			);
+
+			await db.insert(postMedia).values(
+				uploadedFiles.map(({ key }) => ({
+					objectKey: key,
+					postId: newPost.id,
+					mediaType: "image" as const,
+					url: "",
+				}))
+			);
+		}
+		return newPost;
 	} catch (error) {
 		const message = error instanceof Error ? error.message : "Unknown error";
 		logger.error({ message, input }, "createPost: failed to create post");
@@ -42,13 +64,26 @@ export async function getPosts(
 						name: true,
 					},
 				},
+				media: {
+					columns: {
+						id: true,
+						objectKey: true,
+						url: true,
+					},
+				},
 			},
 		});
 
 		const count = await db.$count(post);
 
 		return {
-			items: result,
+			items: result.map((res) => ({
+				...res,
+				media: res.media.map((m) => ({
+					...m,
+					url: `${env.AWS_CF_URL}/${m.objectKey}`,
+				})),
+			})),
 			totalItems: count,
 			totalPages: Math.ceil(count / pageSize),
 			currentPage: page,
@@ -65,6 +100,22 @@ export async function getPost({ postId }: { postId: string }, db: DB) {
 	try {
 		const result = await db.query.post.findFirst({
 			where: eq(post.id, postId),
+			with: {
+				user: {
+					columns: {
+						name: true,
+						username: true,
+						image: true,
+					},
+				},
+				media: {
+					columns: {
+						id: true,
+						url: true,
+						objectKey: true,
+					},
+				},
+			},
 		});
 
 		return result;
@@ -98,14 +149,31 @@ export async function updatePost(
 	}
 }
 
-export async function deletePost(postId: string, db: DB) {
+export async function deletePost(
+	{
+		postToDelete,
+	}: { postToDelete: Exclude<Awaited<ReturnType<typeof getPost>>, undefined> },
+	db: DB
+) {
 	try {
-		const result = await db.delete(post).where(eq(post.id, postId)).returning();
+		const result = await db
+			.delete(post)
+			.where(eq(post.id, postToDelete.id))
+			.returning({ deletedPost: post.id });
+
+		if (postToDelete.media.length > 0) {
+			await Promise.all(
+				postToDelete.media.map((p) => deleteImage({ objectKey: p.objectKey }))
+			);
+		}
 
 		return result[0];
 	} catch (error) {
 		const message = error instanceof Error ? error.message : "Unknown error";
-		logger.error({ message, postId }, "updatePost: failed to update post");
+		logger.error(
+			{ message, postId: postToDelete.id },
+			"deletePost: failed to delete post"
+		);
 		throw error;
 	}
 }

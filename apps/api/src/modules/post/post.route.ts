@@ -17,6 +17,19 @@ import {
 
 export async function postRouter(server: FastifyInstance) {
 	server.withTypeProvider<ZodTypeProvider>().post("/", {
+		preValidation: async (req) => {
+			if (!req.body?.files) {
+				return;
+			}
+			const formData = await req.formData();
+			const content = formData.get("content")?.toString() || "";
+			const files = formData.getAll("files") || [];
+
+			req.body = {
+				content,
+				files: files as File[],
+			};
+		},
 		schema: createPostSchema,
 		preHandler: [server.authenticate],
 		handler: createPostHandler,
@@ -24,7 +37,7 @@ export async function postRouter(server: FastifyInstance) {
 
 	server.withTypeProvider<ZodTypeProvider>().get("/", {
 		schema: getPostsSchema,
-		// preHandler: [server.authenticate],
+		preHandler: [server.authenticate],
 		handler: getPostsHandler,
 	});
 

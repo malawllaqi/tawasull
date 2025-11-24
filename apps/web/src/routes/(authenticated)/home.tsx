@@ -9,6 +9,8 @@ export const Route = createFileRoute("/(authenticated)/home")({
 });
 
 function RouteComponent() {
+	// const { user } = Route.useRouteContext();
+
 	return (
 		<div className="min-h-screen">
 			<div className="mx-auto flex max-w-2xl flex-col space-y-4 py-10">
