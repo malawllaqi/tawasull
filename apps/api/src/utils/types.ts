@@ -1,5 +1,7 @@
 export interface PostgresErrorType extends Error {
-	code: string;
+	cause: {
+		code: string;
+	};
 	detail?: string;
 }
 

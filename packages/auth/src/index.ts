@@ -21,6 +21,10 @@ export function initAuth(options: {
 					type: "string",
 					defaultValue: `user${Math.floor(Math.random() * 1_000_000_000)}`,
 				},
+				objectKey: {
+					type: "string",
+					defaultValue: null,
+				},
 			},
 		},
 		socialProviders: {
