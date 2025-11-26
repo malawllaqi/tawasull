@@ -5,6 +5,7 @@ import {
 	deletePostHandler,
 	getPostHandler,
 	getPostsHandler,
+	likePostHandler,
 	updatePostHandler,
 } from "./post.controller";
 import {
@@ -12,6 +13,7 @@ import {
 	deletePostSchema,
 	getPostSchema,
 	getPostsSchema,
+	likePostSchema,
 	updatePostSchema,
 } from "./post.schema";
 
@@ -57,5 +59,11 @@ export async function postRouter(server: FastifyInstance) {
 		schema: deletePostSchema,
 		preHandler: [server.authenticate],
 		handler: deletePostHandler,
+	});
+
+	server.withTypeProvider<ZodTypeProvider>().get("/:postId/like", {
+		schema: likePostSchema,
+		preHandler: [server.authenticate],
+		handler: likePostHandler,
 	});
 }

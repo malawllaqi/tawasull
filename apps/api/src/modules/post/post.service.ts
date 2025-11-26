@@ -1,5 +1,5 @@
-import { type DB, desc, eq, sql } from "@tawasull/db";
-import { type PostModel, post, postMedia } from "@tawasull/db/schema";
+import { and, type DB, desc, eq, sql } from "@tawasull/db";
+import { type PostModel, post, postLike, postMedia } from "@tawasull/db/schema";
 import type { z } from "zod";
 import { env } from "@/utils/env";
 import { logger } from "@/utils/logger";
@@ -43,9 +43,11 @@ export async function getPosts(
 	{
 		page,
 		limit = 20,
+		userId,
 	}: {
 		limit?: number;
 		page: number;
+		userId: string;
 	},
 	db: DB
 ) {
@@ -72,8 +74,19 @@ export async function getPosts(
 					},
 				},
 			},
+			extras: {
+				likes:
+					sql<number>`CAST((SELECT COUNT(*) FROM post_like WHERE post_like.post_id = post.id) AS INTEGER)`.as(
+						"like_count"
+					),
+				isLiked:
+					sql<boolean>`EXISTS(SELECT 1 FROM post_like WHERE post_like.post_id = post.id AND post_like.user_id = ${userId})`.as(
+						"is_liked"
+					),
+			},
 		});
 
+		console.log(result[0]);
 		const count = await db.$count(post);
 
 		return {
@@ -174,6 +187,41 @@ export async function deletePost(
 			{ message, postId: postToDelete.id },
 			"deletePost: failed to delete post"
 		);
+		throw error;
+	}
+}
+
+export async function likePost(
+	{ postId, userId }: { postId: string; userId: string },
+	db: DB
+) {
+	try {
+		const isLiked = await db.query.postLike.findFirst({
+			where: and(eq(postLike.postId, postId), eq(postLike.userId, userId)),
+		});
+
+		if (isLiked) {
+			const unlike = await db
+				.delete(postLike)
+				.where(and(eq(postLike.postId, postId), eq(postLike.userId, userId)))
+				.returning();
+
+			return unlike[0];
+		}
+
+		const result = await db
+			.insert(postLike)
+			.values({
+				postId,
+				userId,
+			})
+			.returning();
+		console.log(result);
+
+		return result[0];
+	} catch (error) {
+		const message = error instanceof Error ? error.message : "Unknown error";
+		logger.error({ message, postId }, "likePost: failed to toggle likes post");
 		throw error;
 	}
 }

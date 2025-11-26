@@ -63,6 +63,8 @@ export const getPostsSchema = {
 							})
 						)
 						.default([]),
+					likes: z.number(),
+					isLiked: z.boolean(),
 				})
 			),
 			totalPages: z.number(),
@@ -118,9 +120,18 @@ export const deletePostSchema = {
 		postId: z.uuid(),
 	}),
 	response: {
-		200: z.object({
-			deletedPost: z.string(),
-		}),
+		200: z.void(),
+		...errorResponses,
+	},
+};
+
+export const likePostSchema = {
+	tags: ["post"],
+	params: z.object({
+		postId: z.uuid(),
+	}),
+	response: {
+		200: z.void(),
 		...errorResponses,
 	},
 };
