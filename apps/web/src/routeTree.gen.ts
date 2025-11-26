@@ -18,6 +18,8 @@ import { Route as authPagesLoginRouteImport } from './routes/(auth-pages)/login'
 import { Route as authenticatedSettingsRouteRouteImport } from './routes/(authenticated)/settings/route'
 import { Route as authenticatedSettingsIndexRouteImport } from './routes/(authenticated)/settings/index'
 import { Route as authenticatedSettingsProfileRouteImport } from './routes/(authenticated)/settings/profile'
+import { Route as authenticatedSettingsPasswordRouteImport } from './routes/(authenticated)/settings/password'
+import { Route as authenticatedSettingsAppearanceRouteImport } from './routes/(authenticated)/settings/appearance'
 
 const authenticatedRouteRoute = authenticatedRouteRouteImport.update({
   id: '/(authenticated)',
@@ -65,6 +67,18 @@ const authenticatedSettingsProfileRoute =
     path: '/profile',
     getParentRoute: () => authenticatedSettingsRouteRoute,
   } as any)
+const authenticatedSettingsPasswordRoute =
+  authenticatedSettingsPasswordRouteImport.update({
+    id: '/password',
+    path: '/password',
+    getParentRoute: () => authenticatedSettingsRouteRoute,
+  } as any)
+const authenticatedSettingsAppearanceRoute =
+  authenticatedSettingsAppearanceRouteImport.update({
+    id: '/appearance',
+    path: '/appearance',
+    getParentRoute: () => authenticatedSettingsRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -72,6 +86,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof authPagesLoginRoute
   '/signup': typeof authPagesSignupRoute
   '/home': typeof authenticatedHomeRoute
+  '/settings/appearance': typeof authenticatedSettingsAppearanceRoute
+  '/settings/password': typeof authenticatedSettingsPasswordRoute
   '/settings/profile': typeof authenticatedSettingsProfileRoute
   '/settings/': typeof authenticatedSettingsIndexRoute
 }
@@ -80,6 +96,8 @@ export interface FileRoutesByTo {
   '/login': typeof authPagesLoginRoute
   '/signup': typeof authPagesSignupRoute
   '/home': typeof authenticatedHomeRoute
+  '/settings/appearance': typeof authenticatedSettingsAppearanceRoute
+  '/settings/password': typeof authenticatedSettingsPasswordRoute
   '/settings/profile': typeof authenticatedSettingsProfileRoute
   '/settings': typeof authenticatedSettingsIndexRoute
 }
@@ -92,6 +110,8 @@ export interface FileRoutesById {
   '/(auth-pages)/login': typeof authPagesLoginRoute
   '/(auth-pages)/signup': typeof authPagesSignupRoute
   '/(authenticated)/home': typeof authenticatedHomeRoute
+  '/(authenticated)/settings/appearance': typeof authenticatedSettingsAppearanceRoute
+  '/(authenticated)/settings/password': typeof authenticatedSettingsPasswordRoute
   '/(authenticated)/settings/profile': typeof authenticatedSettingsProfileRoute
   '/(authenticated)/settings/': typeof authenticatedSettingsIndexRoute
 }
@@ -103,10 +123,20 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/home'
+    | '/settings/appearance'
+    | '/settings/password'
     | '/settings/profile'
     | '/settings/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/signup' | '/home' | '/settings/profile' | '/settings'
+  to:
+    | '/'
+    | '/login'
+    | '/signup'
+    | '/home'
+    | '/settings/appearance'
+    | '/settings/password'
+    | '/settings/profile'
+    | '/settings'
   id:
     | '__root__'
     | '/'
@@ -116,6 +146,8 @@ export interface FileRouteTypes {
     | '/(auth-pages)/login'
     | '/(auth-pages)/signup'
     | '/(authenticated)/home'
+    | '/(authenticated)/settings/appearance'
+    | '/(authenticated)/settings/password'
     | '/(authenticated)/settings/profile'
     | '/(authenticated)/settings/'
   fileRoutesById: FileRoutesById
@@ -191,6 +223,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedSettingsProfileRouteImport
       parentRoute: typeof authenticatedSettingsRouteRoute
     }
+    '/(authenticated)/settings/password': {
+      id: '/(authenticated)/settings/password'
+      path: '/password'
+      fullPath: '/settings/password'
+      preLoaderRoute: typeof authenticatedSettingsPasswordRouteImport
+      parentRoute: typeof authenticatedSettingsRouteRoute
+    }
+    '/(authenticated)/settings/appearance': {
+      id: '/(authenticated)/settings/appearance'
+      path: '/appearance'
+      fullPath: '/settings/appearance'
+      preLoaderRoute: typeof authenticatedSettingsAppearanceRouteImport
+      parentRoute: typeof authenticatedSettingsRouteRoute
+    }
   }
 }
 
@@ -209,12 +255,16 @@ const authPagesRouteRouteWithChildren = authPagesRouteRoute._addFileChildren(
 )
 
 interface authenticatedSettingsRouteRouteChildren {
+  authenticatedSettingsAppearanceRoute: typeof authenticatedSettingsAppearanceRoute
+  authenticatedSettingsPasswordRoute: typeof authenticatedSettingsPasswordRoute
   authenticatedSettingsProfileRoute: typeof authenticatedSettingsProfileRoute
   authenticatedSettingsIndexRoute: typeof authenticatedSettingsIndexRoute
 }
 
 const authenticatedSettingsRouteRouteChildren: authenticatedSettingsRouteRouteChildren =
   {
+    authenticatedSettingsAppearanceRoute: authenticatedSettingsAppearanceRoute,
+    authenticatedSettingsPasswordRoute: authenticatedSettingsPasswordRoute,
     authenticatedSettingsProfileRoute: authenticatedSettingsProfileRoute,
     authenticatedSettingsIndexRoute: authenticatedSettingsIndexRoute,
   }

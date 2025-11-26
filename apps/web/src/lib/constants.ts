@@ -26,7 +26,7 @@ export const navItems: NavItem[] = [
 export const userMenuItems = [
 	{
 		title: "Profile",
-		href: "/dashboard/profile",
+		href: "/settings/profile",
 	},
 	{
 		title: "Account Settings",

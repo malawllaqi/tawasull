@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export async function catchError(error: Error) {
-	const msg = "Unknown error";
+	const msg = error.message || "Unknown error";
 	if (error instanceof HTTPError) {
 		const e = await error.response.json();
 		return toast.error(e?.message || msg);

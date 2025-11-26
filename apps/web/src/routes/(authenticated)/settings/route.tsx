@@ -1,20 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import type { PropsWithChildren } from "react";
+import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { PageContainer } from "@/components/page-container";
 import { buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/(authenticated)/settings")({
-	component: RouteComponent,
+	component: SettingsLayout,
 });
-
-function RouteComponent() {
-	return (
-		<SettingsLayout>
-			<div className="">page</div>
-		</SettingsLayout>
-	);
-}
 
 const sidebarNavItems: { title: string; href: string }[] = [
 	{
@@ -31,7 +22,7 @@ const sidebarNavItems: { title: string; href: string }[] = [
 	},
 ];
 
-export default function SettingsLayout({ children }: PropsWithChildren) {
+export function SettingsLayout() {
 	return (
 		<PageContainer className="" maxWidth="3xl">
 			<div className="mb-8 space-y-0.5">
@@ -67,7 +58,9 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 				<Separator className="my-6 md:hidden" />
 
 				<div className="flex-1 md:max-w-2xl">
-					<section className="max-w-xl space-y-12">{children}</section>
+					<section className="max-w-xl space-y-12">
+						<Outlet />
+					</section>
 				</div>
 			</div>
 		</PageContainer>

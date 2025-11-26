@@ -12,6 +12,7 @@ export const user = pgTable("user", {
 	updatedAt: timestamp("updated_at").notNull(),
 	username: text("username").unique(),
 	displayUsername: text("display_username"),
+	objectKey: text("object_key"),
 });
 
 export const userRelations = relations(user, ({ many }) => ({

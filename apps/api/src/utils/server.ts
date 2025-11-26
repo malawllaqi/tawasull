@@ -10,6 +10,7 @@ import {
 } from "fastify-type-provider-zod";
 import { authRouter } from "@/modules/auth/auth.route";
 import { postRouter } from "@/modules/post/post.route";
+import { userRoute } from "@/modules/user/user.route";
 import { setupAuth } from "./auth";
 import { corsOptions } from "./cors";
 
@@ -70,6 +71,7 @@ export async function buildServer({ db }: { db: DB }) {
 
 	fastify.after(() => {
 		fastify.register(authRouter);
+		fastify.register(userRoute, { prefix: "/api/v1/user" });
 		fastify.register(postRouter, { prefix: "/api/v1/post" });
 		fastify.get("/health", async () => ({ status: "ok" }));
 	});

@@ -1,5 +1,7 @@
 import type { Post } from "@tawasull/shared";
-import { Bookmark, Heart, MessageCircle, Repeat2 } from "lucide-react";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { Bookmark, Dot, Heart, MessageCircle, Repeat2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +14,8 @@ import {
 import { cn } from "@/lib/utils";
 import { PostMenu } from "./post-menu";
 
+dayjs.extend(relativeTime);
+
 type PostPreviewProps = {
 	post: Post;
 };
@@ -19,9 +23,9 @@ export function PostPreview({ post }: PostPreviewProps) {
 	return (
 		<Card className="overflow-hidden">
 			<CardHeader className="flex items-center justify-between">
-				<div className="flex space-x-4">
+				<div className="flex space-x-2">
 					<div className="relative">
-						<Avatar>
+						<Avatar className="">
 							<AvatarImage
 								alt={`@${post.user.username}`}
 								className="h-11 w-11 object-cover"
@@ -36,6 +40,13 @@ export function PostPreview({ post }: PostPreviewProps) {
 					<div className="flex flex-col space-y-1 text-xs">
 						<p>{post.user.name}</p>
 						<span className="text-muted-foreground">@{post.user.username}</span>
+					</div>
+					<div className="flex items-start justify-start space-x-1">
+						<Dot className="size-4" />
+						{/* <span className="text-muted-foreground text-xs">25h</span> */}
+						<span className="text-muted-foreground text-xs">
+							{dayjs(post.createdAt).fromNow()}
+						</span>
 					</div>
 				</div>
 

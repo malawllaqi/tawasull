@@ -72,7 +72,8 @@
         "noUnusedTemplateLiteral": "error",
         "useNumberNamespace": "error",
         "noInferrableTypes": "error",
-        "noUselessElse": "error"
+        "noUselessElse": "error",
+        "noEnum": "off"
       },
       "a11y": {
         "noSvgWithoutTitle": "off"
