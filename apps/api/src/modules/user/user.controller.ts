@@ -44,7 +44,7 @@ export async function updateUserController(
 ) {
 	try {
 		const userResult = await updateUser(
-			{ ...request.body, userId: request.user.id },
+			{ ...request.body, currentUser: request.user },
 			request.db
 		);
 

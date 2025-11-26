@@ -3,8 +3,9 @@ import { user } from "@tawasull/db/schema/auth";
 import type { z } from "zod";
 import { env } from "@/utils/env";
 import { logger } from "@/utils/logger";
-import { uploadImage } from "@/utils/s3";
+import { deleteImage, uploadImage } from "@/utils/s3";
 import type { updateUserSchema } from "./user.schema";
+import type { Session } from "@tawasull/auth";
 
 export async function getUsers(
 	{
@@ -41,24 +42,29 @@ export async function getUsers(
 	}
 }
 export async function updateUser(
-	input: z.infer<typeof updateUserSchema.body> & { userId: string },
+	input: z.infer<typeof updateUserSchema.body> & { currentUser:Session["user"] },
 	db: DB
 ) {
-	console.log(input);
+
+	const {currentUser, ...rest} = input
 	try {
-		if (!input.file) {
+		if (!rest.file) {
 			const updatedUserWithoutFile = await db
 				.update(user)
 				.set({
-					...input,
+					...rest,
 				})
-				.where(eq(user.id, input.userId))
+				.where(eq(user.id, currentUser.id))
 				.returning();
 
 			return updatedUserWithoutFile[0];
 		}
 
-		const { key } = await uploadImage({ file: input.file });
+		const { key } = await uploadImage({ file: rest.file });
+
+		if(currentUser.objectKey){
+		  await deleteImage({objectKey:currentUser.objectKey})
+		}
 
 		const result = await db
 			.update(user)
@@ -67,7 +73,7 @@ export async function updateUser(
 				image: `${env.AWS_CF_URL}/${key}`,
 				objectKey: key,
 			})
-			.where(eq(user.id, input.userId))
+			.where(eq(user.id, currentUser.id))
 			.returning();
 
 		return result[0];
