@@ -1,7 +1,7 @@
 import type { Post } from "@tawasull/shared";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Bookmark, Dot, Heart, MessageCircle, Repeat2 } from "lucide-react";
+import { Bookmark, Dot, MessageCircle, Repeat2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import {
 	CardHeader,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { LikePost } from "./actions/like-post";
 import { PostMenu } from "./post-menu";
 
 dayjs.extend(relativeTime);
@@ -80,17 +81,19 @@ export function PostPreview({ post }: PostPreviewProps) {
 			<CardFooter className="flex items-center justify-between">
 				<div className="flex items-center space-x-4 text-muted-foreground">
 					<Button className="flex items-center" variant={"ghost"}>
-						<Heart className="" />
+						<MessageCircle className="" />
 						<span className="text-xs">4</span>
 					</Button>
 					<Button className="flex items-center" variant={"ghost"}>
 						<Repeat2 className="" />
 						<span className="text-xs">4</span>
 					</Button>
-					<Button className="flex items-center" variant={"ghost"}>
-						<MessageCircle className="" />
-						<span className="text-xs">4</span>
-					</Button>
+
+					<LikePost
+						count={post.likes}
+						isLiked={post.isLiked}
+						postId={post.id}
+					/>
 				</div>
 
 				<div className="flex items-center space-x-4 text-muted-foreground">

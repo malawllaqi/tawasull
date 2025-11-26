@@ -16,6 +16,7 @@ import {
 	deletePost,
 	getPost,
 	getPosts,
+	likePost,
 	updatePost,
 } from "./post.service";
 
@@ -51,7 +52,10 @@ export async function getPostsHandler(
 	const { limit, page } = request.query;
 
 	try {
-		const result = await getPosts({ page, limit }, request.db);
+		const result = await getPosts(
+			{ page, limit, userId: request.user.id },
+			request.db
+		);
 
 		return reply.status(200).send(result);
 	} catch (error) {
@@ -132,7 +136,29 @@ export async function deletePostHandler(
 		});
 	}
 
-	const deletionResult = await deletePost({ postToDelete: result }, request.db);
+	await deletePost({ postToDelete: result }, request.db);
 
-	return reply.status(200).send(deletionResult);
+	return reply.status(200).send();
+}
+
+export async function likePostHandler(
+	request: FastifyRequest<{
+		Params: z.infer<typeof deletePostSchema.params>;
+	}>,
+	reply: FastifyReply
+) {
+	const { postId } = request.params;
+	const result = await getPost({ postId }, request.db);
+
+	if (!result) {
+		return httpError({
+			reply,
+			code: StatusCodes.NOT_FOUND,
+			message: "Post not found",
+		});
+	}
+
+	await likePost({ postId: result.id, userId: request.user.id }, request.db);
+
+	return reply.status(200).send();
 }

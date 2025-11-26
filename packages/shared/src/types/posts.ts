@@ -10,6 +10,8 @@ export type Post = {
 		username: string | null;
 	};
 	media: PostMedia[];
+	likes: number;
+	isLiked: boolean;
 };
 
 export type PostAPIResponse = {
