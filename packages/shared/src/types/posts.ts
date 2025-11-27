@@ -7,7 +7,7 @@ export type Post = {
 	user: {
 		name: string;
 		image: string | null;
-		username: string | null;
+		username: string;
 	};
 	media: PostMedia[];
 	likes: number;

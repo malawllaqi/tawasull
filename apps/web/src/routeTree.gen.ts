@@ -16,10 +16,13 @@ import { Route as authenticatedHomeRouteImport } from './routes/(authenticated)/
 import { Route as authPagesSignupRouteImport } from './routes/(auth-pages)/signup'
 import { Route as authPagesLoginRouteImport } from './routes/(auth-pages)/login'
 import { Route as authenticatedSettingsRouteRouteImport } from './routes/(authenticated)/settings/route'
+import { Route as authenticatedUserIdRouteRouteImport } from './routes/(authenticated)/$userId/route'
 import { Route as authenticatedSettingsIndexRouteImport } from './routes/(authenticated)/settings/index'
+import { Route as authenticatedUserIdIndexRouteImport } from './routes/(authenticated)/$userId/index'
 import { Route as authenticatedSettingsProfileRouteImport } from './routes/(authenticated)/settings/profile'
 import { Route as authenticatedSettingsPasswordRouteImport } from './routes/(authenticated)/settings/password'
 import { Route as authenticatedSettingsAppearanceRouteImport } from './routes/(authenticated)/settings/appearance'
+import { Route as authenticatedUserIdLikesRouteImport } from './routes/(authenticated)/$userId/likes'
 
 const authenticatedRouteRoute = authenticatedRouteRouteImport.update({
   id: '/(authenticated)',
@@ -55,11 +58,23 @@ const authenticatedSettingsRouteRoute =
     path: '/settings',
     getParentRoute: () => authenticatedRouteRoute,
   } as any)
+const authenticatedUserIdRouteRoute =
+  authenticatedUserIdRouteRouteImport.update({
+    id: '/$userId',
+    path: '/$userId',
+    getParentRoute: () => authenticatedRouteRoute,
+  } as any)
 const authenticatedSettingsIndexRoute =
   authenticatedSettingsIndexRouteImport.update({
     id: '/',
     path: '/',
     getParentRoute: () => authenticatedSettingsRouteRoute,
+  } as any)
+const authenticatedUserIdIndexRoute =
+  authenticatedUserIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => authenticatedUserIdRouteRoute,
   } as any)
 const authenticatedSettingsProfileRoute =
   authenticatedSettingsProfileRouteImport.update({
@@ -79,16 +94,25 @@ const authenticatedSettingsAppearanceRoute =
     path: '/appearance',
     getParentRoute: () => authenticatedSettingsRouteRoute,
   } as any)
+const authenticatedUserIdLikesRoute =
+  authenticatedUserIdLikesRouteImport.update({
+    id: '/likes',
+    path: '/likes',
+    getParentRoute: () => authenticatedUserIdRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$userId': typeof authenticatedUserIdRouteRouteWithChildren
   '/settings': typeof authenticatedSettingsRouteRouteWithChildren
   '/login': typeof authPagesLoginRoute
   '/signup': typeof authPagesSignupRoute
   '/home': typeof authenticatedHomeRoute
+  '/$userId/likes': typeof authenticatedUserIdLikesRoute
   '/settings/appearance': typeof authenticatedSettingsAppearanceRoute
   '/settings/password': typeof authenticatedSettingsPasswordRoute
   '/settings/profile': typeof authenticatedSettingsProfileRoute
+  '/$userId/': typeof authenticatedUserIdIndexRoute
   '/settings/': typeof authenticatedSettingsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -96,9 +120,11 @@ export interface FileRoutesByTo {
   '/login': typeof authPagesLoginRoute
   '/signup': typeof authPagesSignupRoute
   '/home': typeof authenticatedHomeRoute
+  '/$userId/likes': typeof authenticatedUserIdLikesRoute
   '/settings/appearance': typeof authenticatedSettingsAppearanceRoute
   '/settings/password': typeof authenticatedSettingsPasswordRoute
   '/settings/profile': typeof authenticatedSettingsProfileRoute
+  '/$userId': typeof authenticatedUserIdIndexRoute
   '/settings': typeof authenticatedSettingsIndexRoute
 }
 export interface FileRoutesById {
@@ -106,26 +132,32 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/(auth-pages)': typeof authPagesRouteRouteWithChildren
   '/(authenticated)': typeof authenticatedRouteRouteWithChildren
+  '/(authenticated)/$userId': typeof authenticatedUserIdRouteRouteWithChildren
   '/(authenticated)/settings': typeof authenticatedSettingsRouteRouteWithChildren
   '/(auth-pages)/login': typeof authPagesLoginRoute
   '/(auth-pages)/signup': typeof authPagesSignupRoute
   '/(authenticated)/home': typeof authenticatedHomeRoute
+  '/(authenticated)/$userId/likes': typeof authenticatedUserIdLikesRoute
   '/(authenticated)/settings/appearance': typeof authenticatedSettingsAppearanceRoute
   '/(authenticated)/settings/password': typeof authenticatedSettingsPasswordRoute
   '/(authenticated)/settings/profile': typeof authenticatedSettingsProfileRoute
+  '/(authenticated)/$userId/': typeof authenticatedUserIdIndexRoute
   '/(authenticated)/settings/': typeof authenticatedSettingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/$userId'
     | '/settings'
     | '/login'
     | '/signup'
     | '/home'
+    | '/$userId/likes'
     | '/settings/appearance'
     | '/settings/password'
     | '/settings/profile'
+    | '/$userId/'
     | '/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -133,22 +165,27 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/home'
+    | '/$userId/likes'
     | '/settings/appearance'
     | '/settings/password'
     | '/settings/profile'
+    | '/$userId'
     | '/settings'
   id:
     | '__root__'
     | '/'
     | '/(auth-pages)'
     | '/(authenticated)'
+    | '/(authenticated)/$userId'
     | '/(authenticated)/settings'
     | '/(auth-pages)/login'
     | '/(auth-pages)/signup'
     | '/(authenticated)/home'
+    | '/(authenticated)/$userId/likes'
     | '/(authenticated)/settings/appearance'
     | '/(authenticated)/settings/password'
     | '/(authenticated)/settings/profile'
+    | '/(authenticated)/$userId/'
     | '/(authenticated)/settings/'
   fileRoutesById: FileRoutesById
 }
@@ -209,12 +246,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedSettingsRouteRouteImport
       parentRoute: typeof authenticatedRouteRoute
     }
+    '/(authenticated)/$userId': {
+      id: '/(authenticated)/$userId'
+      path: '/$userId'
+      fullPath: '/$userId'
+      preLoaderRoute: typeof authenticatedUserIdRouteRouteImport
+      parentRoute: typeof authenticatedRouteRoute
+    }
     '/(authenticated)/settings/': {
       id: '/(authenticated)/settings/'
       path: '/'
       fullPath: '/settings/'
       preLoaderRoute: typeof authenticatedSettingsIndexRouteImport
       parentRoute: typeof authenticatedSettingsRouteRoute
+    }
+    '/(authenticated)/$userId/': {
+      id: '/(authenticated)/$userId/'
+      path: '/'
+      fullPath: '/$userId/'
+      preLoaderRoute: typeof authenticatedUserIdIndexRouteImport
+      parentRoute: typeof authenticatedUserIdRouteRoute
     }
     '/(authenticated)/settings/profile': {
       id: '/(authenticated)/settings/profile'
@@ -237,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedSettingsAppearanceRouteImport
       parentRoute: typeof authenticatedSettingsRouteRoute
     }
+    '/(authenticated)/$userId/likes': {
+      id: '/(authenticated)/$userId/likes'
+      path: '/likes'
+      fullPath: '/$userId/likes'
+      preLoaderRoute: typeof authenticatedUserIdLikesRouteImport
+      parentRoute: typeof authenticatedUserIdRouteRoute
+    }
   }
 }
 
@@ -253,6 +311,22 @@ const authPagesRouteRouteChildren: authPagesRouteRouteChildren = {
 const authPagesRouteRouteWithChildren = authPagesRouteRoute._addFileChildren(
   authPagesRouteRouteChildren,
 )
+
+interface authenticatedUserIdRouteRouteChildren {
+  authenticatedUserIdLikesRoute: typeof authenticatedUserIdLikesRoute
+  authenticatedUserIdIndexRoute: typeof authenticatedUserIdIndexRoute
+}
+
+const authenticatedUserIdRouteRouteChildren: authenticatedUserIdRouteRouteChildren =
+  {
+    authenticatedUserIdLikesRoute: authenticatedUserIdLikesRoute,
+    authenticatedUserIdIndexRoute: authenticatedUserIdIndexRoute,
+  }
+
+const authenticatedUserIdRouteRouteWithChildren =
+  authenticatedUserIdRouteRoute._addFileChildren(
+    authenticatedUserIdRouteRouteChildren,
+  )
 
 interface authenticatedSettingsRouteRouteChildren {
   authenticatedSettingsAppearanceRoute: typeof authenticatedSettingsAppearanceRoute
@@ -275,11 +349,13 @@ const authenticatedSettingsRouteRouteWithChildren =
   )
 
 interface authenticatedRouteRouteChildren {
+  authenticatedUserIdRouteRoute: typeof authenticatedUserIdRouteRouteWithChildren
   authenticatedSettingsRouteRoute: typeof authenticatedSettingsRouteRouteWithChildren
   authenticatedHomeRoute: typeof authenticatedHomeRoute
 }
 
 const authenticatedRouteRouteChildren: authenticatedRouteRouteChildren = {
+  authenticatedUserIdRouteRoute: authenticatedUserIdRouteRouteWithChildren,
   authenticatedSettingsRouteRoute: authenticatedSettingsRouteRouteWithChildren,
   authenticatedHomeRoute: authenticatedHomeRoute,
 }
