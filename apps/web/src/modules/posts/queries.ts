@@ -3,17 +3,20 @@ import {
 	queryOptions,
 	type UseQueryOptions,
 } from "@tanstack/react-query";
-import type { PostAPIResponse, PostQueryParams } from "@tawasull/shared";
+import type { Post, PostAPIResponse, PostQueryParams } from "@tawasull/shared";
 import { getCookieHeaders } from "@/functions/auth";
+import { getPostById } from "@/functions/post";
 import { api } from "@/lib/ky";
 
 export async function getPosts(
 	queryOps: PostQueryParams = {}
 ): Promise<PostAPIResponse> {
-	const { page } = queryOps;
+	const { page, id } = queryOps;
 	const queryParams = new URLSearchParams();
 
 	if (page) queryParams.append("page", page.toString());
+
+	if (id) queryParams.append("id", id);
 	const queryString = queryParams.toString();
 	try {
 		const res = await api.get(`post${queryString ? `?${queryString}` : ""}`, {
@@ -27,27 +30,26 @@ export async function getPosts(
 	}
 }
 
-export function createPostsQueryOptions<
-	TData = PostAPIResponse,
-	TError = Error,
->(
-	params?: PostQueryParams,
-	options?: Omit<
-		UseQueryOptions<PostAPIResponse, TError, TData>,
-		"queryKey" | "queryFn"
-	>
+export function createPostQueryOptions<TData = Post, TError = Error>(
+	params: { id: string },
+	options?: Omit<UseQueryOptions<Post, TError, TData>, "queryKey" | "queryFn">
 ) {
 	return queryOptions({
 		...options,
-		queryKey: ["posts", params],
-		queryFn: () => getPosts(),
+		queryKey: ["post", params],
+		queryFn: () => getPostById({ data: params }),
 	});
 }
 
-export function createPostsInfiniteQueryOptions() {
+type FeedPostsQueryParams = {
+	id?: string;
+};
+
+export function createFeedPostsQueryOptions(params: FeedPostsQueryParams = {}) {
 	return infiniteQueryOptions({
-		queryKey: ["posts"],
-		queryFn: ({ pageParam }) => getPosts({ page: pageParam.toString() }),
+		queryKey: ["posts", params],
+		queryFn: ({ pageParam }) =>
+			getPosts({ page: pageParam.toString(), id: params?.id ?? undefined }),
 		initialPageParam: 1,
 		getNextPageParam: (lastPage) =>
 			lastPage.hasMore ? lastPage.currentPage + 1 : undefined,

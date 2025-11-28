@@ -4,7 +4,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { HeadingSmall } from "@/components/heading-small";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
 	Field,
@@ -15,6 +14,7 @@ import {
 import { FileUpload, FileUploadTrigger } from "@/components/ui/file-upload";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { UserAvatarProfile } from "@/components/user-avatar-profile";
 import { api } from "@/lib/ky";
 import { catchError } from "@/lib/utils";
 import DeleteUser from "@/modules/auth/components/delete-user";
@@ -66,13 +66,11 @@ function RouteComponent() {
 			catchError(error);
 		},
 	});
-	const {
-		user: { user },
-	} = Route.useRouteContext();
+	const { currentUser } = Route.useRouteContext();
 	const form = useForm({
 		defaultValues: {
-			name: user.name,
-			username: user.username,
+			name: currentUser.name,
+			username: currentUser.username,
 			files: [],
 		} as z.infer<typeof profileSchema>,
 		validators: {
@@ -127,17 +125,12 @@ function RouteComponent() {
 										value={field.state.value}
 									>
 										<div className="group relative w-fit overflow-hidden">
-											<Avatar className="size-14 rounded-md">
-												<AvatarImage
-													alt={user?.name || ""}
-													className="object-cover"
-													src={imgUrl || user.image || ""}
-												/>
+											<UserAvatarProfile
+												className="size-14 rounded-lg"
+												name={currentUser.name}
+												url={imgUrl || currentUser.image}
+											/>
 
-												<AvatarFallback className="rounded-lg">
-													{user?.name?.slice(0, 2)?.toUpperCase() || "CN"}
-												</AvatarFallback>
-											</Avatar>
 											<FileUploadTrigger
 												asChild
 												className="-translate-x-2/4 -translate-y-2/4 absolute top-2/4 left-2/4 z-20 size-14 opacity-0 group-hover:opacity-100"

@@ -49,11 +49,11 @@ export async function getPostsHandler(
 	}>,
 	reply: FastifyReply
 ) {
-	const { limit, page } = request.query;
+	const { limit, page, id } = request.query;
 
 	try {
 		const result = await getPosts(
-			{ page, limit, userId: request.user.id },
+			{ page, limit, currentUserId: request.user.id, id },
 			request.db
 		);
 
@@ -76,7 +76,10 @@ export async function getPostHandler(
 ) {
 	const { postId } = request.params;
 
-	const result = await getPost({ postId }, request.db);
+	const result = await getPost(
+		{ postId, currentUserId: request.user.id },
+		request.db
+	);
 
 	if (!result) {
 		return httpError({
@@ -118,7 +121,10 @@ export async function deletePostHandler(
 	reply: FastifyReply
 ) {
 	const { postId } = request.params;
-	const result = await getPost({ postId }, request.db);
+	const result = await getPost(
+		{ postId, currentUserId: request.user.id },
+		request.db
+	);
 
 	if (!result) {
 		return httpError({
@@ -148,7 +154,10 @@ export async function likePostHandler(
 	reply: FastifyReply
 ) {
 	const { postId } = request.params;
-	const result = await getPost({ postId }, request.db);
+	const result = await getPost(
+		{ postId, currentUserId: request.user.id },
+		request.db
+	);
 
 	if (!result) {
 		return httpError({

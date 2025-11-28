@@ -7,7 +7,7 @@ export type Post = {
 	user: {
 		name: string;
 		image: string | null;
-		username: string | null;
+		username: string;
 	};
 	media: PostMedia[];
 	likes: number;
@@ -26,6 +26,7 @@ export type PostQueryParams = {
 	search?: string;
 	limit?: string;
 	page?: string;
+	id?: string;
 };
 
 export type PostMedia = {

@@ -25,6 +25,17 @@ export const getUsersSchema = {
 	},
 };
 
+export const getUserSchema = {
+	tags: ["user"],
+	params: z.object({
+		username: z.string(),
+	}),
+	response: {
+		200: createSelectSchema(user),
+		...errorResponses,
+	},
+};
+
 export const updateUserSchema = {
 	tags: ["user"],
 	consumes: ["multipart/form-data"],

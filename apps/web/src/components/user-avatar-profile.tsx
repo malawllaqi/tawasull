@@ -1,32 +1,46 @@
-import type { Session } from "@tawasull/auth";
+import { cva, type VariantProps } from "class-variance-authority";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
+import GradientAvatar from "./ui/gradient-avatar";
 
-interface UserAvatarProfileProps {
+const avatarVariants = cva("", {
+	variants: {
+		size: {
+			xs: "h-7 w-7",
+			sm: "h-8 w-8",
+			md: "h-10 w-10",
+			lg: "h-12 w-12",
+			xl: "h-16 w-16",
+			"2xl": "h-20 w-20",
+			"3xl": "h-24 w-24",
+		},
+	},
+	defaultVariants: {
+		size: "md",
+	},
+});
+
+interface UserAvatarProfileProps extends VariantProps<typeof avatarVariants> {
+	url?: string | null;
+	name?: string;
 	className?: string;
-	showInfo?: boolean;
-	user: Session["user"];
 }
 
 export function UserAvatarProfile({
+	url,
+	name,
+	size = "md",
 	className,
-	showInfo = false,
-	user,
 }: UserAvatarProfileProps) {
 	return (
-		<div className="flex items-center gap-2">
-			<Avatar className={className}>
-				<AvatarImage alt={user?.name || ""} src={user?.image || ""} />
-				<AvatarFallback className="rounded-lg">
-					{user?.name?.slice(0, 2)?.toUpperCase() || "CN"}
-				</AvatarFallback>
-			</Avatar>
-
-			{showInfo && (
-				<div className="grid flex-1 text-left text-sm leading-tight">
-					<span className="truncate font-semibold">{user?.name || ""}</span>
-					<span className="truncate text-xs">{user?.email || ""}</span>
-				</div>
-			)}
-		</div>
+		<Avatar className={cn(avatarVariants({ size }), className)}>
+			<AvatarImage alt={name || ""} src={url || ""} />
+			<AvatarFallback className="rounded-lg">
+				<GradientAvatar
+					className={cn(avatarVariants({ size }), className)}
+					letter={name?.charAt(0)}
+				/>
+			</AvatarFallback>
+		</Avatar>
 	);
 }

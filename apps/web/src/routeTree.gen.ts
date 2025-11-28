@@ -20,6 +20,10 @@ import { Route as authenticatedSettingsIndexRouteImport } from './routes/(authen
 import { Route as authenticatedSettingsProfileRouteImport } from './routes/(authenticated)/settings/profile'
 import { Route as authenticatedSettingsPasswordRouteImport } from './routes/(authenticated)/settings/password'
 import { Route as authenticatedSettingsAppearanceRouteImport } from './routes/(authenticated)/settings/appearance'
+import { Route as authenticatedUsernamePostIdRouteImport } from './routes/(authenticated)/$username/$postId'
+import { Route as authenticatedUsernameprofileRouteRouteImport } from './routes/(authenticated)/$username/(profile)/route'
+import { Route as authenticatedUsernameprofileIndexRouteImport } from './routes/(authenticated)/$username/(profile)/index'
+import { Route as authenticatedUsernameprofileLikesRouteImport } from './routes/(authenticated)/$username/(profile)/likes'
 
 const authenticatedRouteRoute = authenticatedRouteRouteImport.update({
   id: '/(authenticated)',
@@ -79,6 +83,30 @@ const authenticatedSettingsAppearanceRoute =
     path: '/appearance',
     getParentRoute: () => authenticatedSettingsRouteRoute,
   } as any)
+const authenticatedUsernamePostIdRoute =
+  authenticatedUsernamePostIdRouteImport.update({
+    id: '/$username/$postId',
+    path: '/$username/$postId',
+    getParentRoute: () => authenticatedRouteRoute,
+  } as any)
+const authenticatedUsernameprofileRouteRoute =
+  authenticatedUsernameprofileRouteRouteImport.update({
+    id: '/$username/(profile)',
+    path: '/$username',
+    getParentRoute: () => authenticatedRouteRoute,
+  } as any)
+const authenticatedUsernameprofileIndexRoute =
+  authenticatedUsernameprofileIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => authenticatedUsernameprofileRouteRoute,
+  } as any)
+const authenticatedUsernameprofileLikesRoute =
+  authenticatedUsernameprofileLikesRouteImport.update({
+    id: '/likes',
+    path: '/likes',
+    getParentRoute: () => authenticatedUsernameprofileRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -86,20 +114,27 @@ export interface FileRoutesByFullPath {
   '/login': typeof authPagesLoginRoute
   '/signup': typeof authPagesSignupRoute
   '/home': typeof authenticatedHomeRoute
+  '/$username': typeof authenticatedUsernameprofileRouteRouteWithChildren
+  '/$username/$postId': typeof authenticatedUsernamePostIdRoute
   '/settings/appearance': typeof authenticatedSettingsAppearanceRoute
   '/settings/password': typeof authenticatedSettingsPasswordRoute
   '/settings/profile': typeof authenticatedSettingsProfileRoute
   '/settings/': typeof authenticatedSettingsIndexRoute
+  '/$username/likes': typeof authenticatedUsernameprofileLikesRoute
+  '/$username/': typeof authenticatedUsernameprofileIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof authPagesLoginRoute
   '/signup': typeof authPagesSignupRoute
   '/home': typeof authenticatedHomeRoute
+  '/$username/$postId': typeof authenticatedUsernamePostIdRoute
   '/settings/appearance': typeof authenticatedSettingsAppearanceRoute
   '/settings/password': typeof authenticatedSettingsPasswordRoute
   '/settings/profile': typeof authenticatedSettingsProfileRoute
   '/settings': typeof authenticatedSettingsIndexRoute
+  '/$username/likes': typeof authenticatedUsernameprofileLikesRoute
+  '/$username': typeof authenticatedUsernameprofileIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -110,10 +145,14 @@ export interface FileRoutesById {
   '/(auth-pages)/login': typeof authPagesLoginRoute
   '/(auth-pages)/signup': typeof authPagesSignupRoute
   '/(authenticated)/home': typeof authenticatedHomeRoute
+  '/(authenticated)/$username/(profile)': typeof authenticatedUsernameprofileRouteRouteWithChildren
+  '/(authenticated)/$username/$postId': typeof authenticatedUsernamePostIdRoute
   '/(authenticated)/settings/appearance': typeof authenticatedSettingsAppearanceRoute
   '/(authenticated)/settings/password': typeof authenticatedSettingsPasswordRoute
   '/(authenticated)/settings/profile': typeof authenticatedSettingsProfileRoute
   '/(authenticated)/settings/': typeof authenticatedSettingsIndexRoute
+  '/(authenticated)/$username/(profile)/likes': typeof authenticatedUsernameprofileLikesRoute
+  '/(authenticated)/$username/(profile)/': typeof authenticatedUsernameprofileIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -123,20 +162,27 @@ export interface FileRouteTypes {
     | '/login'
     | '/signup'
     | '/home'
+    | '/$username'
+    | '/$username/$postId'
     | '/settings/appearance'
     | '/settings/password'
     | '/settings/profile'
     | '/settings/'
+    | '/$username/likes'
+    | '/$username/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/signup'
     | '/home'
+    | '/$username/$postId'
     | '/settings/appearance'
     | '/settings/password'
     | '/settings/profile'
     | '/settings'
+    | '/$username/likes'
+    | '/$username'
   id:
     | '__root__'
     | '/'
@@ -146,10 +192,14 @@ export interface FileRouteTypes {
     | '/(auth-pages)/login'
     | '/(auth-pages)/signup'
     | '/(authenticated)/home'
+    | '/(authenticated)/$username/(profile)'
+    | '/(authenticated)/$username/$postId'
     | '/(authenticated)/settings/appearance'
     | '/(authenticated)/settings/password'
     | '/(authenticated)/settings/profile'
     | '/(authenticated)/settings/'
+    | '/(authenticated)/$username/(profile)/likes'
+    | '/(authenticated)/$username/(profile)/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -237,6 +287,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authenticatedSettingsAppearanceRouteImport
       parentRoute: typeof authenticatedSettingsRouteRoute
     }
+    '/(authenticated)/$username/$postId': {
+      id: '/(authenticated)/$username/$postId'
+      path: '/$username/$postId'
+      fullPath: '/$username/$postId'
+      preLoaderRoute: typeof authenticatedUsernamePostIdRouteImport
+      parentRoute: typeof authenticatedRouteRoute
+    }
+    '/(authenticated)/$username/(profile)': {
+      id: '/(authenticated)/$username/(profile)'
+      path: '/$username'
+      fullPath: '/$username'
+      preLoaderRoute: typeof authenticatedUsernameprofileRouteRouteImport
+      parentRoute: typeof authenticatedRouteRoute
+    }
+    '/(authenticated)/$username/(profile)/': {
+      id: '/(authenticated)/$username/(profile)/'
+      path: '/'
+      fullPath: '/$username/'
+      preLoaderRoute: typeof authenticatedUsernameprofileIndexRouteImport
+      parentRoute: typeof authenticatedUsernameprofileRouteRoute
+    }
+    '/(authenticated)/$username/(profile)/likes': {
+      id: '/(authenticated)/$username/(profile)/likes'
+      path: '/likes'
+      fullPath: '/$username/likes'
+      preLoaderRoute: typeof authenticatedUsernameprofileLikesRouteImport
+      parentRoute: typeof authenticatedUsernameprofileRouteRoute
+    }
   }
 }
 
@@ -274,14 +352,37 @@ const authenticatedSettingsRouteRouteWithChildren =
     authenticatedSettingsRouteRouteChildren,
   )
 
+interface authenticatedUsernameprofileRouteRouteChildren {
+  authenticatedUsernameprofileLikesRoute: typeof authenticatedUsernameprofileLikesRoute
+  authenticatedUsernameprofileIndexRoute: typeof authenticatedUsernameprofileIndexRoute
+}
+
+const authenticatedUsernameprofileRouteRouteChildren: authenticatedUsernameprofileRouteRouteChildren =
+  {
+    authenticatedUsernameprofileLikesRoute:
+      authenticatedUsernameprofileLikesRoute,
+    authenticatedUsernameprofileIndexRoute:
+      authenticatedUsernameprofileIndexRoute,
+  }
+
+const authenticatedUsernameprofileRouteRouteWithChildren =
+  authenticatedUsernameprofileRouteRoute._addFileChildren(
+    authenticatedUsernameprofileRouteRouteChildren,
+  )
+
 interface authenticatedRouteRouteChildren {
   authenticatedSettingsRouteRoute: typeof authenticatedSettingsRouteRouteWithChildren
   authenticatedHomeRoute: typeof authenticatedHomeRoute
+  authenticatedUsernameprofileRouteRoute: typeof authenticatedUsernameprofileRouteRouteWithChildren
+  authenticatedUsernamePostIdRoute: typeof authenticatedUsernamePostIdRoute
 }
 
 const authenticatedRouteRouteChildren: authenticatedRouteRouteChildren = {
   authenticatedSettingsRouteRoute: authenticatedSettingsRouteRouteWithChildren,
   authenticatedHomeRoute: authenticatedHomeRoute,
+  authenticatedUsernameprofileRouteRoute:
+    authenticatedUsernameprofileRouteRouteWithChildren,
+  authenticatedUsernamePostIdRoute: authenticatedUsernamePostIdRoute,
 }
 
 const authenticatedRouteRouteWithChildren =

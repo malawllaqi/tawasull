@@ -22,21 +22,15 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { authClient } from "@/lib/auth";
 import { navItems, userMenuItems } from "@/lib/constants";
+import type { CurrentUserProps } from "@/lib/types";
 import SignOutBtn from "@/modules/auth/components/sign-out-btn";
 import { Icons } from "../icons";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Separator } from "../ui/separator";
+import { UserAvatarProfile } from "../user-avatar-profile";
 
-export function AppSidebar() {
-	const { data } = authClient.useSession();
-
-	const defaultUser = {
-		name: data?.user?.name || "John Doe",
-		email: data?.user?.email || "john.doe@example.com",
-		avatar: data?.user?.image || "",
-	};
+type AppSidebarProps = {} & CurrentUserProps;
+export function AppSidebar({ currentUser }: AppSidebarProps) {
 	return (
 		<Sidebar collapsible="icon">
 			<SidebarHeader>
@@ -97,21 +91,17 @@ export function AppSidebar() {
 									className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 									size="lg"
 								>
-									<Avatar className="h-8 w-8 rounded-lg">
-										<AvatarImage
-											alt={defaultUser.name}
-											src={defaultUser.avatar}
-										/>
-										<AvatarFallback className="rounded-lg">
-											{defaultUser.name.charAt(0).toUpperCase()}
-										</AvatarFallback>
-									</Avatar>
+									<UserAvatarProfile
+										className="size-8 rounded-lg"
+										name={currentUser.name}
+										url={currentUser.image}
+									/>
 									<div className="grid flex-1 text-left text-sm leading-tight">
 										<span className="truncate font-semibold">
-											{defaultUser.name}
+											{currentUser.name}
 										</span>
 										<span className="truncate text-xs">
-											{defaultUser.email}
+											{currentUser.email}
 										</span>
 									</div>
 									<ChevronUp className="ml-auto size-4" />
