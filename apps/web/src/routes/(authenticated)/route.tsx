@@ -13,23 +13,24 @@ import { authQueryOptions } from "@/modules/auth/queries";
 export const Route = createFileRoute("/(authenticated)")({
 	component: AppLayout,
 	beforeLoad: async ({ context }) => {
-		const user = await context.queryClient.ensureQueryData({
+		const currentUser = await context.queryClient.ensureQueryData({
 			...authQueryOptions(),
 			revalidateIfStale: true,
 		});
 
-		if (!user) {
+		if (!currentUser) {
 			throw redirect({ to: "/login" });
 		}
 
-		return { user };
+		return { currentUser: currentUser.user };
 	},
 });
 
 export function AppLayout() {
+	const { currentUser } = Route.useRouteContext();
 	return (
 		<SidebarProvider>
-			<AppSidebar />
+			<AppSidebar currentUser={currentUser} />
 			<SidebarInset>
 				<header className="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 border-b bg-sidebar transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
 					<div className="flex items-center gap-2 px-4">
@@ -39,7 +40,7 @@ export function AppLayout() {
 
 					<div className="flex items-center gap-2 px-4">
 						<div className="hidden md:flex" />
-						<UserNav />
+						<UserNav currentUser={currentUser} />
 						<ThemeToggle />
 					</div>
 				</header>

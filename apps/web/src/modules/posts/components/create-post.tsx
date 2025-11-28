@@ -28,7 +28,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { api } from "@/lib/ky";
 import { catchError } from "@/lib/utils";
-import { createPostsInfiniteQueryOptions } from "../queries";
+import { createFeedPostsQueryOptions } from "../queries";
 
 const createPostSchema = z.object({
 	files: z
@@ -66,7 +66,7 @@ export function CreatePost() {
 			toast.success("post submited!");
 			form.reset();
 			queryClient.invalidateQueries({
-				queryKey: createPostsInfiniteQueryOptions().queryKey,
+				queryKey: createFeedPostsQueryOptions().queryKey,
 			});
 		},
 		onError: async (error) => {
@@ -88,127 +88,125 @@ export function CreatePost() {
 	});
 
 	return (
-		<div
-			className="size-full"
+		<form
+			className="overflow-hidden rounded-md border bg-card hover:cursor-text"
 			onSubmit={(e) => {
 				e.preventDefault();
 				form.handleSubmit();
 			}}
 		>
-			<form className="overflow-hidden rounded-md border bg-card hover:cursor-text">
-				<InputGroup className="size-full bg-card dark:bg-card">
+			<InputGroup className="size-full bg-card dark:bg-card">
+				<form.Field
+					children={(field) => {
+						const isInvalid =
+							field.state.meta.isTouched && !field.state.meta.isValid;
+
+						return (
+							<InputGroupTextarea
+								aria-invalid={isInvalid}
+								className="field-sizing-content max-h-48 min-h-16"
+								disabled={isPending}
+								id={field.name}
+								name={field.name}
+								onBlur={field.handleBlur}
+								onChange={(e) => field.handleChange(e.target.value)}
+								placeholder="What would you like to post?"
+								value={field.state.value}
+							/>
+						);
+					}}
+					name="content"
+				/>
+
+				<InputGroupAddon align="block-end">
 					<form.Field
 						children={(field) => {
-							const isInvalid =
-								field.state.meta.isTouched && !field.state.meta.isValid;
-
 							return (
-								<InputGroupTextarea
-									aria-invalid={isInvalid}
-									className="field-sizing-content max-h-48 min-h-16"
-									disabled={isPending}
-									id={field.name}
-									name={field.name}
-									onBlur={field.handleBlur}
-									onChange={(e) => field.handleChange(e.target.value)}
-									placeholder="What would you like to post?"
+								<FileUpload
+									accept="image/*"
+									className="relative"
+									maxFiles={2}
+									maxSize={5 * 1024 * 1024}
+									multiple
+									onFileReject={(_, message) => {
+										toast.error(message);
+										// form.setError("files", {
+										// 	message,
+										// });
+									}}
+									onValueChange={field.handleChange}
 									value={field.state.value}
-								/>
+								>
+									<DropdownMenu>
+										<DropdownMenuTrigger asChild>
+											<InputGroupButton
+												className=""
+												disabled={isPending}
+												size="icon-sm"
+												type="button"
+												variant="ghost"
+											>
+												<PlusIcon />
+											</InputGroupButton>
+										</DropdownMenuTrigger>
+										<DropdownMenuContent align="start">
+											<DropdownMenuItem asChild>
+												<FileUploadTrigger asChild>
+													<Button
+														className="size-7 w-full rounded-sm"
+														size="icon"
+														type="button"
+														variant="ghost"
+													>
+														<ImageIcon className="mr-2 size-4" />
+														Add photos
+													</Button>
+												</FileUploadTrigger>
+											</DropdownMenuItem>
+										</DropdownMenuContent>
+									</DropdownMenu>
+									<FileUploadList className="flex flex-row items-center">
+										{field.state.value?.length
+											? field.state.value.map((file, index) => (
+													<FileUploadItem
+														className="max-w-36 p-1.5"
+														key={index}
+														value={file}
+													>
+														<FileUploadItemPreview className="size-8 [&>svg]:size-5" />
+														<FileUploadItemMetadata size="sm" />
+														<FileUploadItemDelete asChild>
+															<Button
+																className="size-7"
+																size="icon"
+																variant="ghost"
+															>
+																<X />
+																<span className="sr-only">Delete</span>
+															</Button>
+														</FileUploadItemDelete>
+													</FileUploadItem>
+												))
+											: null}
+									</FileUploadList>
+								</FileUpload>
 							);
 						}}
-						name="content"
+						name="files"
 					/>
 
-					<InputGroupAddon align="block-end">
-						<form.Field
-							children={(field) => {
-								return (
-									<FileUpload
-										accept="image/*"
-										className="relative"
-										maxFiles={2}
-										maxSize={5 * 1024 * 1024}
-										multiple
-										onFileReject={(_, message) => {
-											toast.error(message);
-											// form.setError("files", {
-											// 	message,
-											// });
-										}}
-										onValueChange={field.handleChange}
-										value={field.state.value}
-									>
-										<DropdownMenu>
-											<DropdownMenuTrigger asChild>
-												<InputGroupButton
-													className=""
-													disabled={isPending}
-													size="icon-sm"
-													type="button"
-													variant="ghost"
-												>
-													<PlusIcon />
-												</InputGroupButton>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent align="start">
-												<DropdownMenuItem asChild>
-													<FileUploadTrigger asChild>
-														<Button
-															className="size-7 w-full rounded-sm"
-															size="icon"
-															type="button"
-															variant="ghost"
-														>
-															<ImageIcon className="mr-2 size-4" />
-															Add photos
-														</Button>
-													</FileUploadTrigger>
-												</DropdownMenuItem>
-											</DropdownMenuContent>
-										</DropdownMenu>
-										<FileUploadList className="flex flex-row items-center">
-											{field.state.value?.length
-												? field.state.value.map((file, index) => (
-														<FileUploadItem
-															className="max-w-36 p-1.5"
-															key={index}
-															value={file}
-														>
-															<FileUploadItemPreview className="size-8 [&>svg]:size-5" />
-															<FileUploadItemMetadata size="sm" />
-															<FileUploadItemDelete asChild>
-																<Button
-																	className="size-7"
-																	size="icon"
-																	variant="ghost"
-																>
-																	<X />
-																	<span className="sr-only">Delete</span>
-																</Button>
-															</FileUploadItemDelete>
-														</FileUploadItem>
-													))
-												: null}
-										</FileUploadList>
-									</FileUpload>
-								);
-							}}
-							name="files"
-						/>
-
-						<InputGroupButton
-							className="ml-auto"
-							disabled={isPending}
-							size="sm"
-							type="submit"
-							variant="default"
-						>
-							{isPending ? <Spinner /> : <CornerDownLeftIcon />}
-						</InputGroupButton>
-					</InputGroupAddon>
-					{/* </div> */}
-				</InputGroup>
-			</form>
-		</div>
+					<InputGroupButton
+						className="ml-auto"
+						disabled={isPending}
+						size="sm"
+						type="submit"
+						variant="default"
+					>
+						{isPending ? <Spinner /> : <CornerDownLeftIcon />}
+					</InputGroupButton>
+				</InputGroupAddon>
+				{/* </div> */}
+			</InputGroup>
+		</form>
 	);
 }

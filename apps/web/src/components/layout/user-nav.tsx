@@ -1,6 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -12,7 +11,9 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth";
+import type { CurrentUserProps } from "@/lib/types";
 import { authQueryOptions } from "@/modules/auth/queries";
+import { UserAvatarProfile } from "../user-avatar-profile";
 
 // interface UserNavProps {
 // 	user?: {
@@ -22,7 +23,9 @@ import { authQueryOptions } from "@/modules/auth/queries";
 // 	};
 // }
 
-export function UserNav() {
+type UserNavProps = {} & CurrentUserProps;
+
+export function UserNav({ currentUser }: UserNavProps) {
 	const { data } = authClient.useSession();
 	const queryClient = useQueryClient();
 	const router = useRouter();
@@ -39,20 +42,11 @@ export function UserNav() {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button className="relative h-8 w-8 rounded-full" variant="ghost">
-					<Avatar className="h-8 w-8">
-						<AvatarImage
-							alt={data?.user?.name}
-							referrerPolicy="no-referrer"
-							src={data?.user?.image || ""}
-						/>
-						{/* <AvatarFallback delayMs={0}> */}
-						<AvatarFallback suppressHydrationWarning>
-							{data?.user?.name
-								.split(" ")
-								.map((n) => n[0])
-								.join("")}
-						</AvatarFallback>
-					</Avatar>
+					<UserAvatarProfile
+						name={currentUser.name}
+						size={"xs"}
+						url={currentUser.image}
+					/>
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-56" forceMount>

@@ -44,6 +44,7 @@ export const getPostsSchema = {
 			.optional()
 			.transform((val) => (val == null ? undefined : Number.parseInt(val, 10))),
 		page: z.coerce.number().default(1),
+		id: z.string().optional(),
 	}),
 	response: {
 		200: z.object({
@@ -97,6 +98,8 @@ export const getPostSchema = {
 					})
 				)
 				.default([]),
+			likes: z.number(),
+			isLiked: z.boolean(),
 		}),
 		...errorResponses,
 	},

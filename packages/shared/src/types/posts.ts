@@ -26,6 +26,7 @@ export type PostQueryParams = {
 	search?: string;
 	limit?: string;
 	page?: string;
+	id?: string;
 };
 
 export type PostMedia = {

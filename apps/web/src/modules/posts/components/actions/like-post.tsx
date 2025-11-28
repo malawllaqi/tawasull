@@ -3,7 +3,10 @@ import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { api } from "@/lib/ky";
 import { catchError, cn } from "@/lib/utils";
-import { createPostsInfiniteQueryOptions } from "../../queries";
+import {
+	createFeedPostsQueryOptions,
+	createPostQueryOptions,
+} from "../../queries";
 
 type LikePostProps = {
 	postId: string;
@@ -19,7 +22,10 @@ export function LikePost({ postId, count, isLiked }: LikePostProps) {
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({
-				queryKey: createPostsInfiniteQueryOptions().queryKey,
+				queryKey: createFeedPostsQueryOptions().queryKey,
+			});
+			queryClient.invalidateQueries({
+				queryKey: createPostQueryOptions({ id: postId }).queryKey,
 			});
 		},
 	});
@@ -27,7 +33,12 @@ export function LikePost({ postId, count, isLiked }: LikePostProps) {
 		<Button
 			className="flex items-center"
 			disabled={isPending}
-			onClick={() => mutate()}
+			onClick={(e) => {
+				e.preventDefault();
+				e.stopPropagation();
+
+				mutate();
+			}}
 			type="button"
 			variant={"ghost"}
 		>

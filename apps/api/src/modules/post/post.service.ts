@@ -4,7 +4,7 @@ import type { z } from "zod";
 import { env } from "@/utils/env";
 import { logger } from "@/utils/logger";
 import { deleteImage, uploadImage } from "@/utils/s3";
-import type { createPostSchema } from "./post.schema";
+import type { createPostSchema, getPostsSchema } from "./post.schema";
 
 export async function createPost(
 	input: z.infer<typeof createPostSchema.body> & { userId: string },
@@ -39,16 +39,11 @@ export async function createPost(
 	}
 }
 
+type getPostsInput = z.infer<typeof getPostsSchema.querystring> & {
+	currentUserId: string;
+};
 export async function getPosts(
-	{
-		page,
-		limit = 20,
-		userId,
-	}: {
-		limit?: number;
-		page: number;
-		userId: string;
-	},
+	{ page, limit = 20, currentUserId, id }: getPostsInput,
 	db: DB
 ) {
 	const pageSize = Math.min(limit, 20);
@@ -58,6 +53,9 @@ export async function getPosts(
 			orderBy: desc(post.createdAt),
 			limit: pageSize,
 			offset: (page - 1) * pageSize,
+			...(id && {
+				where: eq(post.userId, id),
+			}),
 			with: {
 				user: {
 					columns: {
@@ -80,7 +78,7 @@ export async function getPosts(
 						"like_count"
 					),
 				isLiked:
-					sql<boolean>`EXISTS(SELECT 1 FROM post_like WHERE post_like.post_id = post.id AND post_like.user_id = ${userId})`.as(
+					sql<boolean>`EXISTS(SELECT 1 FROM post_like WHERE post_like.post_id = post.id AND post_like.user_id = ${currentUserId})`.as(
 						"is_liked"
 					),
 			},
@@ -109,7 +107,10 @@ export async function getPosts(
 	}
 }
 
-export async function getPost({ postId }: { postId: string }, db: DB) {
+export async function getPost(
+	{ postId, currentUserId }: { postId: string; currentUserId: string },
+	db: DB
+) {
 	try {
 		const result = await db.query.post.findFirst({
 			where: eq(post.id, postId),
@@ -128,6 +129,16 @@ export async function getPost({ postId }: { postId: string }, db: DB) {
 						objectKey: true,
 					},
 				},
+			},
+			extras: {
+				likes:
+					sql<number>`CAST((SELECT COUNT(*) FROM post_like WHERE post_like.post_id = post.id) AS INTEGER)`.as(
+						"like_count"
+					),
+				isLiked:
+					sql<boolean>`EXISTS(SELECT 1 FROM post_like WHERE post_like.post_id = post.id AND post_like.user_id = ${currentUserId})`.as(
+						"is_liked"
+					),
 			},
 		});
 

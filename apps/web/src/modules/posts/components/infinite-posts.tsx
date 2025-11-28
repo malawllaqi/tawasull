@@ -3,13 +3,15 @@ import { useEffect } from "react";
 import { useIntersectionObserver } from "usehooks-ts";
 
 import { Spinner } from "@/components/ui/spinner";
-import { createPostsInfiniteQueryOptions } from "../queries";
+import { createFeedPostsQueryOptions } from "../queries";
 import { PostPreview } from "./post-preview";
 
-// type InfinitePostsProps = {};
-export function InfinitePosts() {
+type InfinitePostsProps = {
+	userId?: string;
+};
+export function InfinitePosts({ userId }: InfinitePostsProps) {
 	const { data, fetchNextPage, isFetchingNextPage } = useSuspenseInfiniteQuery({
-		...createPostsInfiniteQueryOptions(),
+		...createFeedPostsQueryOptions({ id: userId }),
 	});
 	const { isIntersecting, ref } = useIntersectionObserver({
 		threshold: 0.5,
@@ -26,9 +28,13 @@ export function InfinitePosts() {
 	return (
 		<div className="space-y-4 py-10">
 			{posts?.length
-				? posts?.map((p) => <PostPreview key={p.id} post={p} />)
+				? posts?.map((p) => <PostPreview asLink key={p.id} post={p} />)
 				: null}
-			{isFetchingNextPage ? <Spinner /> : null}
+			{isFetchingNextPage ? (
+				<div className="flex justify-center">
+					<Spinner />
+				</div>
+			) : null}
 			<div ref={ref} />
 		</div>
 	);

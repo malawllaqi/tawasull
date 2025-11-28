@@ -4,8 +4,12 @@ import type z from "zod";
 import { httpError } from "@/utils/http";
 import { logger } from "@/utils/logger";
 import { PostgresErrorCode, type PostgresErrorType } from "@/utils/types";
-import type { getUsersSchema, updateUserSchema } from "./user.schema";
-import { getUsers, updateUser } from "./user.service";
+import type {
+	getUserSchema,
+	getUsersSchema,
+	updateUserSchema,
+} from "./user.schema";
+import { getUser, getUsers, updateUser } from "./user.service";
 
 export async function getCurrentUser(
 	request: FastifyRequest,
@@ -36,6 +40,24 @@ export async function getUsersHandler(
 			cause: e.message,
 		});
 	}
+}
+
+export async function getUserHandler(
+	request: FastifyRequest<{ Params: z.infer<typeof getUserSchema.params> }>,
+	reply: FastifyReply
+) {
+	const { username } = request.params;
+	const result = await getUser(username, request.db);
+
+	if (!result) {
+		return httpError({
+			reply,
+			code: StatusCodes.NOT_FOUND,
+			message: "User not found",
+		});
+	}
+
+	return reply.status(200).send(result);
 }
 
 export async function updateUserController(
