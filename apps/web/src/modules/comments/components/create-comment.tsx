@@ -1,4 +1,5 @@
 import { useForm } from "@tanstack/react-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Send, Smile } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
@@ -19,19 +20,47 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
+import { Spinner } from "@/components/ui/spinner";
+import { api } from "@/lib/ky";
+import { createCommentsQueryOptions } from "../queries";
 
 const commentScehma = z.object({
 	content: z.string(),
 });
-export default function CreateComment() {
-	const [isOpen, setIsOpen] = useState(false);
+
+type CreateCommentProps = {
+	postId: string;
+};
+export default function CreateComment({ postId }: CreateCommentProps) {
+	const queryClient = useQueryClient();
+	const { mutate, isPending } = useMutation({
+		mutationFn: async (input: z.infer<typeof commentScehma>) =>
+			await api
+				.post("comment", { json: { content: input.content, postId } })
+				.json(),
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: createCommentsQueryOptions({ postId }).queryKey,
+			});
+			form.reset();
+		},
+	});
 	const form = useForm({
 		defaultValues: {
 			content: "",
 		} as z.infer<typeof commentScehma>,
+		onSubmit: ({ value }) => mutate(value),
 	});
+	const [isOpen, setIsOpen] = useState(false);
+
 	return (
-		<form className="">
+		<form
+			className=""
+			onSubmit={(e) => {
+				e.preventDefault();
+				form.handleSubmit();
+			}}
+		>
 			<InputGroup className="border-none focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0">
 				<InputGroupAddon align={"inline-start"}>
 					<Popover onOpenChange={setIsOpen} open={isOpen}>
@@ -49,7 +78,6 @@ export default function CreateComment() {
 										"content",
 										form.getFieldValue("content") + emoji
 									);
-									console.log(emoji);
 								}}
 							>
 								<EmojiPickerSearch />
@@ -68,8 +96,8 @@ export default function CreateComment() {
 							<InputGroupTextarea
 								aria-invalid={isInvalid}
 								className="max-h-40 min-h-10"
+								disabled={isPending}
 								id={field.name}
-								// disabled={isPending}
 								name={field.name}
 								onBlur={field.handleBlur}
 								onChange={(e) => field.handleChange(e.target.value)}
@@ -82,8 +110,8 @@ export default function CreateComment() {
 				/>
 
 				<InputGroupAddon align="inline-end">
-					<Button size={"icon-sm"}>
-						<Send />
+					<Button disabled={isPending} size={"icon-sm"} type="submit">
+						{isPending ? <Spinner /> : <Send />}
 					</Button>
 				</InputGroupAddon>
 			</InputGroup>

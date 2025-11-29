@@ -84,7 +84,6 @@ export async function getPosts(
 			},
 		});
 
-		console.log(result[0]);
 		const count = await db.$count(post);
 
 		return {
@@ -227,7 +226,6 @@ export async function likePost(
 				userId,
 			})
 			.returning();
-		console.log(result);
 
 		return result[0];
 	} catch (error) {
