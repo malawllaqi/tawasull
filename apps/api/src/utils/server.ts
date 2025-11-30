@@ -37,6 +37,7 @@ async function authenticate(req: FastifyRequest, reply: FastifyReply) {
 export async function buildServer({ db }: { db: DB }) {
 	const fastify = Fastify({
 		// logger: envToLogger[env.NODE_ENV],
+		bodyLimit: 5 * 1024 * 1024,
 	});
 
 	// Add schema validator and serializer

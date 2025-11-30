@@ -68,3 +68,38 @@ export async function getPostComments(
 		throw error;
 	}
 }
+
+export async function getComment({ commentId }: { commentId: string }, db: DB) {
+	try {
+		const result = await db.query.comment.findFirst({
+			where: eq(comment.id, commentId),
+		});
+
+		return result;
+	} catch (error) {
+		const message = error instanceof Error ? error.message : "Unknown error";
+		logger.error({ message, commentId }, "getComment failed to get comment");
+		throw error;
+	}
+}
+
+export async function deleteComment(
+	{ commentId }: { commentId: string },
+	db: DB
+) {
+	try {
+		const result = await db
+			.delete(comment)
+			.where(eq(comment.id, commentId))
+			.returning();
+
+		return result[0];
+	} catch (error) {
+		const message = error instanceof Error ? error.message : "Unknown error";
+		logger.error(
+			{ message, commentId },
+			"deleteComment failed to delete comment"
+		);
+		throw error;
+	}
+}

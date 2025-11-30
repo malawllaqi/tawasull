@@ -22,6 +22,10 @@ import {
 } from "@/components/ui/popover";
 import { Spinner } from "@/components/ui/spinner";
 import { api } from "@/lib/ky";
+import {
+	createFeedPostsQueryOptions,
+	createPostQueryOptions,
+} from "@/modules/posts/queries";
 import { createCommentsQueryOptions } from "../queries";
 
 const commentScehma = z.object({
@@ -41,6 +45,12 @@ export default function CreateComment({ postId }: CreateCommentProps) {
 		onSuccess: () => {
 			queryClient.invalidateQueries({
 				queryKey: createCommentsQueryOptions({ postId }).queryKey,
+			});
+			queryClient.invalidateQueries({
+				queryKey: createPostQueryOptions({ id: postId }).queryKey,
+			});
+			queryClient.invalidateQueries({
+				queryKey: createFeedPostsQueryOptions().queryKey,
 			});
 			form.reset();
 		},

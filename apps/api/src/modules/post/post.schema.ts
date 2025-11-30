@@ -64,6 +64,8 @@ export const getPostsSchema = {
 							})
 						)
 						.default([]),
+
+					comments: z.number(),
 					likes: z.number(),
 					isLiked: z.boolean(),
 				})
@@ -98,6 +100,7 @@ export const getPostSchema = {
 					})
 				)
 				.default([]),
+			comments: z.number(),
 			likes: z.number(),
 			isLiked: z.boolean(),
 		}),

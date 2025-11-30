@@ -31,3 +31,14 @@ export const getPostCommentsSchema = {
 		...errorResponses,
 	},
 };
+
+export const deleteCommentSchema = {
+	tags: ["comment"],
+	params: z.object({
+		commentId: z.uuid(),
+	}),
+	response: {
+		200: z.void(),
+		...errorResponses,
+	},
+};

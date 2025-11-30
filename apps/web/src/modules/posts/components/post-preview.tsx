@@ -15,6 +15,7 @@ import {
 import GradientAvatar from "@/components/ui/gradient-avatar";
 import { cn } from "@/lib/utils";
 import { LikePost } from "./actions/like-post";
+import { PostMediaPreview } from "./post-media";
 import { PostMenu } from "./post-menu";
 
 dayjs.extend(relativeTime);
@@ -78,28 +79,8 @@ export function PostPreview({ post, asLink = false }: PostPreviewProps) {
 						});
 				}}
 			>
-				<p>{post.content}</p>
-				<div
-					className={cn(
-						"grid gap-3 pt-4",
-						post.media.length <= 1 ? "grid-cols-1" : "grid-cols-2"
-					)}
-				>
-					{post.media.length
-						? post.media.map((m) => (
-								<figure
-									className="overflow-hidden rounded-2xl border border-border/60 bg-muted/40"
-									key={m.id}
-								>
-									<img
-										alt={`Travel highlight ${m.id + 2}`}
-										className="h-64 w-full object-cover transition-transform duration-700 hover:scale-105"
-										src={m.url}
-									/>
-								</figure>
-							))
-						: null}
-				</div>
+				<p className="whitespace-pre-line">{post.content}</p>
+				{post.media.length ? <PostMediaPreview media={post.media} /> : null}
 			</CardContent>
 			<hr />
 			{/* <CardFooter className="flex items-center justify-between py-2"> */}
@@ -107,7 +88,7 @@ export function PostPreview({ post, asLink = false }: PostPreviewProps) {
 				<div className="flex items-center space-x-4 text-muted-foreground">
 					<Button className="flex items-center" variant={"ghost"}>
 						<MessageCircle className="" />
-						<span className="text-xs">4</span>
+						<span className="text-xs">{post.comments}</span>
 					</Button>
 					<Button className="flex items-center" variant={"ghost"}>
 						<Repeat2 className="" />

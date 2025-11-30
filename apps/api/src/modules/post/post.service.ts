@@ -73,6 +73,10 @@ export async function getPosts(
 				},
 			},
 			extras: {
+				comments:
+					sql<number>`CAST((SELECT COUNT(*) FROM comment WHERE comment.post_id = post.id) AS INTEGER)`.as(
+						"comment_count"
+					),
 				likes:
 					sql<number>`CAST((SELECT COUNT(*) FROM post_like WHERE post_like.post_id = post.id) AS INTEGER)`.as(
 						"like_count"
@@ -130,6 +134,10 @@ export async function getPost(
 				},
 			},
 			extras: {
+				comments:
+					sql<number>`CAST((SELECT COUNT(*) FROM comment WHERE comment.post_id = post.id) AS INTEGER)`.as(
+						"comment_count"
+					),
 				likes:
 					sql<number>`CAST((SELECT COUNT(*) FROM post_like WHERE post_like.post_id = post.id) AS INTEGER)`.as(
 						"like_count"
@@ -141,7 +149,17 @@ export async function getPost(
 			},
 		});
 
-		return result;
+		if (!result) {
+			return null;
+		}
+
+		return {
+			...result,
+			media: result.media.map((m) => ({
+				...m,
+				url: `${env.AWS_CF_URL}/${m.objectKey}`,
+			})),
+		};
 	} catch (error) {
 		const message = error instanceof Error ? error.message : "Unknown error";
 		logger.error({ message, postId }, "getPost failed to get a post by id");
@@ -174,29 +192,30 @@ export async function updatePost(
 
 export async function deletePost(
 	{
-		postToDelete,
-	}: { postToDelete: Exclude<Awaited<ReturnType<typeof getPost>>, undefined> },
+		postId,
+		media,
+	}: {
+		media: { url: string; id: string; objectKey: string }[];
+		postId: string;
+	},
 	db: DB
 ) {
 	try {
 		const result = await db
 			.delete(post)
-			.where(eq(post.id, postToDelete.id))
+			.where(eq(post.id, postId))
 			.returning({ deletedPost: post.id });
 
-		if (postToDelete.media.length > 0) {
+		if (media.length > 0) {
 			await Promise.all(
-				postToDelete.media.map((p) => deleteImage({ objectKey: p.objectKey }))
+				media.map((m) => deleteImage({ objectKey: m.objectKey }))
 			);
 		}
 
 		return result[0];
 	} catch (error) {
 		const message = error instanceof Error ? error.message : "Unknown error";
-		logger.error(
-			{ message, postId: postToDelete.id },
-			"deletePost: failed to delete post"
-		);
+		logger.error({ message, postId }, "deletePost: failed to delete post");
 		throw error;
 	}
 }
