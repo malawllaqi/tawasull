@@ -1,6 +1,13 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CornerDownLeftIcon, ImageIcon, PlusIcon, X } from "lucide-react";
+import {
+	CornerDownLeftIcon,
+	ImageIcon,
+	PlusIcon,
+	Smile,
+	X,
+} from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -10,6 +17,12 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+	EmojiPicker,
+	EmojiPickerContent,
+	EmojiPickerFooter,
+	EmojiPickerSearch,
+} from "@/components/ui/emoji-picker";
 import {
 	FileUpload,
 	FileUploadItem,
@@ -25,6 +38,11 @@ import {
 	InputGroupButton,
 	InputGroupTextarea,
 } from "@/components/ui/input-group";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import { Spinner } from "@/components/ui/spinner";
 import { api } from "@/lib/ky";
 import { catchError } from "@/lib/utils";
@@ -87,6 +105,7 @@ export function CreatePost() {
 		},
 	});
 
+	const [commentOpen, setCommentOpen] = useState(false);
 	return (
 		<form
 			className="overflow-hidden rounded-md border bg-card hover:cursor-text"
@@ -195,6 +214,29 @@ export function CreatePost() {
 						name="files"
 					/>
 
+					<Popover onOpenChange={setCommentOpen} open={commentOpen}>
+						<PopoverTrigger asChild>
+							<Button size={"icon"} type="button" variant={"ghost"}>
+								<Smile />
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent className="w-fit p-0">
+							<EmojiPicker
+								className="h-[342px]"
+								onEmojiSelect={({ emoji }) => {
+									setCommentOpen(false);
+									form.setFieldValue(
+										"content",
+										form.getFieldValue("content") + emoji
+									);
+								}}
+							>
+								<EmojiPickerSearch />
+								<EmojiPickerContent />
+								<EmojiPickerFooter />
+							</EmojiPicker>
+						</PopoverContent>
+					</Popover>
 					<InputGroupButton
 						className="ml-auto"
 						disabled={isPending}

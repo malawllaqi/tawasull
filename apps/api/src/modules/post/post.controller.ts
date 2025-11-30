@@ -142,7 +142,7 @@ export async function deletePostHandler(
 		});
 	}
 
-	await deletePost({ postToDelete: result }, request.db);
+	await deletePost({ media: result.media, postId: result.id }, request.db);
 
 	return reply.status(200).send();
 }

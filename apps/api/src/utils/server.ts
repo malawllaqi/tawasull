@@ -9,8 +9,9 @@ import {
 	validatorCompiler,
 } from "fastify-type-provider-zod";
 import { authRouter } from "@/modules/auth/auth.route";
+import { commentRouter } from "@/modules/comment/comment.route";
 import { postRouter } from "@/modules/post/post.route";
-import { userRoute } from "@/modules/user/user.route";
+import { userRouter } from "@/modules/user/user.route";
 import { setupAuth } from "./auth";
 import { corsOptions } from "./cors";
 
@@ -36,6 +37,7 @@ async function authenticate(req: FastifyRequest, reply: FastifyReply) {
 export async function buildServer({ db }: { db: DB }) {
 	const fastify = Fastify({
 		// logger: envToLogger[env.NODE_ENV],
+		bodyLimit: 5 * 1024 * 1024,
 	});
 
 	// Add schema validator and serializer
@@ -71,8 +73,9 @@ export async function buildServer({ db }: { db: DB }) {
 
 	fastify.after(() => {
 		fastify.register(authRouter);
-		fastify.register(userRoute, { prefix: "/api/v1/user" });
+		fastify.register(userRouter, { prefix: "/api/v1/user" });
 		fastify.register(postRouter, { prefix: "/api/v1/post" });
+		fastify.register(commentRouter, { prefix: "/api/v1/comment" });
 		fastify.get("/health", async () => ({ status: "ok" }));
 	});
 

@@ -2,7 +2,9 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Suspense } from "react";
 import { PageContainer } from "@/components/page-container";
-import CreateComment from "@/modules/posts/components/actions/create-comment";
+import { CommentSkeleton } from "@/modules/comments/components/comment-skeleton";
+import { Comments } from "@/modules/comments/components/comments";
+import CreateComment from "@/modules/comments/components/create-comment";
 import { PostPreview } from "@/modules/posts/components/post-preview";
 import { PostPreviewSkeleton } from "@/modules/posts/components/post-preview-skeleton";
 import { createPostQueryOptions } from "@/modules/posts/queries";
@@ -19,6 +21,12 @@ function RouteComponent() {
 				<Suspense fallback={<PostPreviewSkeleton />}>
 					<PostDetails id={postId} />
 				</Suspense>
+				<div className="">
+					<CreateComment postId={postId} />
+					<Suspense fallback={<CommentSkeleton />}>
+						<Comments postId={postId} />
+					</Suspense>
+				</div>
 			</PageContainer>
 		</div>
 	);
@@ -30,7 +38,6 @@ function PostDetails({ id }: { id: string }) {
 	return (
 		<div className="space-y-6">
 			<PostPreview post={data} />
-			<CreateComment />
 		</div>
 	);
 }

@@ -10,6 +10,7 @@ export type Post = {
 		username: string;
 	};
 	media: PostMedia[];
+	comments: number;
 	likes: number;
 	isLiked: boolean;
 };

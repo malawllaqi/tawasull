@@ -13,7 +13,7 @@ import {
 	updateUserSchema,
 } from "./user.schema";
 
-export async function userRoute(server: FastifyInstance) {
+export async function userRouter(server: FastifyInstance) {
 	server.withTypeProvider<ZodTypeProvider>().get("/", {
 		schema: getUsersSchema,
 		preHandler: [server.authenticate],
@@ -32,7 +32,6 @@ export async function userRoute(server: FastifyInstance) {
 
 	server.withTypeProvider<ZodTypeProvider>().patch("/", {
 		preValidation: async (req) => {
-			console.log(req.body);
 			if (!req.body?.file) {
 				return;
 			}

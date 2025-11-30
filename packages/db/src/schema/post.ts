@@ -9,6 +9,7 @@ import {
 	uuid,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth";
+import { comment } from "./comment";
 
 const timestamps = {
 	createdAt: timestamp().defaultNow().notNull(),
@@ -36,6 +37,7 @@ export const post = pgTable(
 export const postRelations = relations(post, ({ many, one }) => ({
 	media: many(postMedia),
 	likes: many(postLike),
+	comment: many(comment),
 	user: one(user, {
 		fields: [post.userId],
 		references: [user.id],
