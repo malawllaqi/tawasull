@@ -2,11 +2,14 @@ import type { User } from "@tawasull/shared";
 import { MoreHorizontal, Plus, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { UserAvatarProfile } from "@/components/user-avatar-profile";
+import { useFollows } from "../hooks/use-follows";
 
 interface UserDetailsProps {
 	user: User;
 }
 export function UserDetails({ user }: UserDetailsProps) {
+	const { mutate, isPending } = useFollows(user);
+
 	return (
 		<div className="">
 			<div className="relative size-20">
@@ -26,8 +29,21 @@ export function UserDetails({ user }: UserDetailsProps) {
 				</div>
 				<p className="font-bold text-xs">232 Followers</p>
 				<div className="mt-4 flex items-center space-x-4">
-					<Button className="min-w-24">
-						<Plus /> Follow
+					<Button
+						className="min-w-24"
+						disabled={isPending}
+						onClick={() => mutate()}
+						type="button"
+						variant={user.isFollowing ? "destructive" : "default"}
+					>
+						{user.isFollowing ? (
+							"Unfollow"
+						) : (
+							<>
+								<Plus className="mr-1 inline" />
+								Follow
+							</>
+						)}
 					</Button>
 					<Button className="min-w-24" variant={"outline"}>
 						<Send /> Message
