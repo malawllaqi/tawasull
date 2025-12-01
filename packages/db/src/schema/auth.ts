@@ -1,4 +1,11 @@
-import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import {
+	boolean,
+	pgTable,
+	primaryKey,
+	text,
+	timestamp,
+} from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
 	id: text("id").primaryKey(),
@@ -9,6 +16,8 @@ export const user = pgTable("user", {
 	createdAt: timestamp("created_at").notNull(),
 	updatedAt: timestamp("updated_at").notNull(),
 	username: text("username").unique(),
+	bio: text("bio"),
+	country: text("country"),
 	displayUsername: text("display_username"),
 	objectKey: text("object_key"),
 });
@@ -52,3 +61,27 @@ export const verification = pgTable("verification", {
 	createdAt: timestamp("created_at"),
 	updatedAt: timestamp("updated_at"),
 });
+
+export const follows = pgTable(
+	"follows",
+	{
+		followerId: text("follower_id")
+			.references(() => user.id, {
+				onDelete: "cascade",
+				onUpdate: "cascade",
+			})
+			.notNull(),
+		followingId: text("following_id")
+			.references(() => user.id, { onDelete: "cascade", onUpdate: "cascade" })
+			.notNull(),
+		createdAt: timestamp().defaultNow().notNull(),
+		updatedAt: timestamp({ mode: "date", withTimezone: true }).$onUpdateFn(
+			() => sql`now()`
+		),
+	},
+	(table) => [
+		primaryKey({
+			columns: [table.followerId, table.followingId],
+		}),
+	]
+);

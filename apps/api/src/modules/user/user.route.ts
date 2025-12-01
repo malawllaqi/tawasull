@@ -1,12 +1,15 @@
 import type { FastifyInstance } from "fastify";
 import type { ZodTypeProvider } from "fastify-type-provider-zod";
 import {
+	followUserHandler,
 	getCurrentUser,
 	getUserHandler,
 	getUsersHandler,
+	unfollowUserHandler,
 	updateUserController,
 } from "./user.controller";
 import {
+	followsUserSchema,
 	getCurrentUserSchema,
 	getUserSchema,
 	getUsersSchema,
@@ -24,6 +27,19 @@ export async function userRouter(server: FastifyInstance) {
 		preHandler: [server.authenticate],
 		handler: getUserHandler,
 	});
+
+	server.withTypeProvider<ZodTypeProvider>().get("/:userId/follow", {
+		schema: followsUserSchema,
+		preHandler: [server.authenticate],
+		handler: followUserHandler,
+	});
+
+	server.withTypeProvider<ZodTypeProvider>().get("/:userId/unfollow", {
+		schema: followsUserSchema,
+		preHandler: [server.authenticate],
+		handler: unfollowUserHandler,
+	});
+
 	server.withTypeProvider<ZodTypeProvider>().get("/me", {
 		schema: getCurrentUserSchema,
 		preHandler: [server.authenticate],
