@@ -16,7 +16,6 @@ export type DeleteCommentProps = {
 };
 export function DeleteComment({ commentId, postId }: DeleteCommentProps) {
 	const queryClient = useQueryClient();
-	console.log(commentId);
 	const { mutate, isPending } = useMutation({
 		mutationFn: async () => await api.delete(`comment/${commentId}`).json(),
 		onError: (err) => {

@@ -30,10 +30,9 @@ export function useFollows(user: User) {
 				queryKey: createUsersQueryOptions().queryKey,
 			});
 
-			queryClient.setQueryData(
-				userDetailsQueryOptions({ username: user.username }).queryKey,
-				{ ...user, isFollowing }
-			);
+			queryClient.invalidateQueries({
+				queryKey: userDetailsQueryOptions({ username: user.username }).queryKey,
+			});
 		},
 	});
 }
