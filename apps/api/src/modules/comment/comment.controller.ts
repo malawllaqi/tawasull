@@ -81,7 +81,6 @@ export async function deleteCommentHandler(
 	reply: FastifyReply
 ) {
 	const { commentId } = request.params;
-	console.log(request.params);
 	try {
 		const result = await getComment({ commentId }, request.db);
 

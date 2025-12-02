@@ -5,11 +5,18 @@ import { httpError } from "@/utils/http";
 import { logger } from "@/utils/logger";
 import { PostgresErrorCode, type PostgresErrorType } from "@/utils/types";
 import type {
+	followsUserSchema,
 	getUserSchema,
 	getUsersSchema,
 	updateUserSchema,
 } from "./user.schema";
-import { getUser, getUsers, updateUser } from "./user.service";
+import {
+	followUser,
+	getUser,
+	getUsers,
+	unfollowUser,
+	updateUser,
+} from "./user.service";
 
 export async function getCurrentUser(
 	request: FastifyRequest,
@@ -27,12 +34,15 @@ export async function getUsersHandler(
 	const { limit, page } = request.query;
 
 	try {
-		const result = await getUsers({ page, limit }, request.db);
+		const result = await getUsers(
+			{ page, limit, currentUserId: request.user.id },
+			request.db
+		);
 
 		return reply.status(200).send(result);
 	} catch (error) {
 		const e = error as PostgresErrorType;
-		logger.error({ error }, "getUsers failed to get users");
+		logger.error({ error }, "getUsers() failed to get users");
 		return httpError({
 			reply,
 			message: "Failed to get users",
@@ -47,7 +57,10 @@ export async function getUserHandler(
 	reply: FastifyReply
 ) {
 	const { username } = request.params;
-	const result = await getUser(username, request.db);
+	const result = await getUser(
+		{ username, currentUserId: request.user.id },
+		request.db
+	);
 
 	if (!result) {
 		return httpError({
@@ -89,10 +102,71 @@ export async function updateUserController(
 				code: StatusCodes.CONFLICT,
 			});
 		}
-		logger.error({ error }, "updateUser failed to update user");
+		logger.error({ error }, "updateUser() failed to update user");
 		return httpError({
 			reply,
 			message: "Failed to update user",
+			code: StatusCodes.INTERNAL_SERVER_ERROR,
+			cause: e.message,
+		});
+	}
+}
+
+export async function followUserHandler(
+	request: FastifyRequest<{
+		Params: z.infer<typeof followsUserSchema.params>;
+	}>,
+	reply: FastifyReply
+) {
+	try {
+		const { userId } = request.params;
+		const result = await followUser(
+			{ currentUserId: request.user.id, targetUserId: userId },
+			request.db
+		);
+
+		if (!result) {
+			return httpError({
+				reply,
+				code: StatusCodes.CONFLICT,
+				message: "Already following or user not found",
+			});
+		}
+
+		reply.status(200).send(result);
+	} catch (error) {
+		const e = error as PostgresErrorType;
+
+		logger.error({ error }, "followUser() failed follow user");
+		return httpError({
+			reply,
+			message: "Failed to follow user",
+			code: StatusCodes.INTERNAL_SERVER_ERROR,
+			cause: e.message,
+		});
+	}
+}
+export async function unfollowUserHandler(
+	request: FastifyRequest<{
+		Params: z.infer<typeof followsUserSchema.params>;
+	}>,
+	reply: FastifyReply
+) {
+	try {
+		const { userId } = request.params;
+		const result = await unfollowUser(
+			{ currentUserId: request.user.id, targetUserId: userId },
+			request.db
+		);
+
+		reply.status(200).send(result);
+	} catch (error) {
+		const e = error as PostgresErrorType;
+
+		logger.error({ error }, "unfollowUser() failed ufollow user");
+		return httpError({
+			reply,
+			message: "Failed to unfollow user",
 			code: StatusCodes.INTERNAL_SERVER_ERROR,
 			cause: e.message,
 		});

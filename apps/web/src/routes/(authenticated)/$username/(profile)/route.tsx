@@ -14,37 +14,34 @@ export const Route = createFileRoute("/(authenticated)/$username/(profile)")({
 	beforeLoad: async ({ context, params }) => {
 		const user = await context.queryClient.ensureQueryData({
 			...userDetailsQueryOptions({ username: params.username }),
-		})
+			revalidateIfStale: true,
+		});
 
 		return { user };
 	},
 });
 
 function RouteComponent() {
-	const { user } = Route.useRouteContext();
+	const { username } = Route.useParams();
 	const location = useLocation();
 
 	return (
 		<div>
 			<div className="relative h-36 w-full bg-accent" />
-			<UserDetails user={user} />
+			<UserDetails username={username} />
 			{/* <Separator className="my-4" /> */}
 			<div className="px-10 pt-6">
 				<Tabs className="" defaultValue={location.pathname}>
 					<TabsList className="w-full">
-						<TabsTrigger className="" value={`/${user.username}`}>
-							<Link
-								className="w-full"
-								params={{ username: user.username }}
-								to="/$username"
-							>
+						<TabsTrigger className="" value={`/${username}`}>
+							<Link className="w-full" params={{ username }} to="/$username">
 								Posts
 							</Link>
 						</TabsTrigger>
-						<TabsTrigger className="" value={`/${user.username}/likes`}>
+						<TabsTrigger className="" value={`/${username}/likes`}>
 							<Link
 								className="w-full"
-								params={{ username: user.username }}
+								params={{ username }}
 								to="/$username/likes"
 							>
 								Likes
@@ -58,5 +55,5 @@ function RouteComponent() {
 				<Outlet />
 			</PageContainer>
 		</div>
-	)
+	);
 }

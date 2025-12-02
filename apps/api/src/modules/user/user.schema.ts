@@ -1,4 +1,4 @@
-import { user } from "@tawasull/db/schema/auth";
+import { follows, user } from "@tawasull/db/schema/auth";
 import { createSelectSchema, createUpdateSchema } from "drizzle-zod";
 import { z } from "zod";
 import { errorResponses } from "@/utils/http";
@@ -15,7 +15,11 @@ export const getUsersSchema = {
 	}),
 	response: {
 		200: z.object({
-			items: z.array(createSelectSchema(user)),
+			items: z.array(
+				createSelectSchema(user).extend({
+					isFollowing: z.boolean().default(false),
+				})
+			),
 			totalPages: z.number(),
 			totalItems: z.number(),
 			currentPage: z.number(),
@@ -31,7 +35,9 @@ export const getUserSchema = {
 		username: z.string(),
 	}),
 	response: {
-		200: createSelectSchema(user),
+		200: createSelectSchema(user).extend({
+			isFollowing: z.boolean().default(false),
+		}),
 		...errorResponses,
 	},
 };
@@ -65,6 +71,17 @@ export const getCurrentUserSchema = {
 	tags: ["user"],
 	response: {
 		200: createSelectSchema(user),
+		...errorResponses,
+	},
+};
+
+export const followsUserSchema = {
+	tags: ["user"],
+	params: z.object({
+		userId: z.string(),
+	}),
+	response: {
+		200: createSelectSchema(follows),
 		...errorResponses,
 	},
 };

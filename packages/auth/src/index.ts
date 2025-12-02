@@ -25,6 +25,14 @@ export function initAuth(options: {
 					type: "string",
 					defaultValue: null,
 				},
+				bio: {
+					type: "string",
+					defaultValue: null,
+				},
+				country: {
+					type: "string",
+					defaultValue: null,
+				},
 			},
 		},
 		socialProviders: {

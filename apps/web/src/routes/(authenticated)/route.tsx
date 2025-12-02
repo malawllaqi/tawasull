@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { Suspense } from "react";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { UserNav } from "@/components/layout/user-nav";
@@ -9,6 +10,8 @@ import {
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { authQueryOptions } from "@/modules/auth/queries";
+import { UsersList } from "@/modules/users/components/users-list";
+import { UsersListSkeleton } from "@/modules/users/components/users-list-skeleton";
 
 export const Route = createFileRoute("/(authenticated)")({
 	component: AppLayout,
@@ -48,7 +51,15 @@ export function AppLayout() {
 					<div className="flex-1 px-10 md:px-0">
 						<Outlet />
 					</div>
-					<div className="sticky top-16 hidden h-[calc(100vh-(--spacing(16)))] w-64 bg-card md:flex" />
+					<div className="sticky top-16 hidden h-[calc(100vh-(--spacing(16)))] w-72 flex-col bg-card md:flex">
+						<p className="px-4 pt-4 pb-2 font-bold text-muted-foreground text-sm">
+							Who To Follow
+						</p>
+						<Suspense fallback={<UsersListSkeleton />}>
+							<UsersList />
+						</Suspense>
+						<Separator />
+					</div>
 				</main>
 			</SidebarInset>
 		</SidebarProvider>
