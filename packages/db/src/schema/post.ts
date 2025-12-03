@@ -10,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 import { comment } from "./comment";
+import { notification } from "./notification";
 
 const timestamps = {
 	createdAt: timestamp().defaultNow().notNull(),
@@ -42,6 +43,7 @@ export const postRelations = relations(post, ({ many, one }) => ({
 		fields: [post.userId],
 		references: [user.id],
 	}),
+	notification: many(notification),
 }));
 
 export const mediaTypeEnum = pgEnum("media_type", ["image", "video"]);

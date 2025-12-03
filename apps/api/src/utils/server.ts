@@ -10,6 +10,7 @@ import {
 } from "fastify-type-provider-zod";
 import { authRouter } from "@/modules/auth/auth.route";
 import { commentRouter } from "@/modules/comment/comment.route";
+import { notificationRouter } from "@/modules/notification/notification.route";
 import { postRouter } from "@/modules/post/post.route";
 import { userRouter } from "@/modules/user/user.route";
 import { setupAuth } from "./auth";
@@ -76,6 +77,7 @@ export async function buildServer({ db }: { db: DB }) {
 		fastify.register(userRouter, { prefix: "/api/v1/user" });
 		fastify.register(postRouter, { prefix: "/api/v1/post" });
 		fastify.register(commentRouter, { prefix: "/api/v1/comment" });
+		fastify.register(notificationRouter, { prefix: "/api/v1/notification" });
 		fastify.get("/health", async () => ({ status: "ok" }));
 	});
 

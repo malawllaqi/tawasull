@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
 	boolean,
 	pgTable,
@@ -6,6 +6,9 @@ import {
 	text,
 	timestamp,
 } from "drizzle-orm/pg-core";
+import { comment } from "./comment";
+import { notification } from "./notification";
+import { post } from "./post";
 
 export const user = pgTable("user", {
 	id: text("id").primaryKey(),
@@ -21,6 +24,15 @@ export const user = pgTable("user", {
 	displayUsername: text("display_username"),
 	objectKey: text("object_key"),
 });
+
+export const userRelations = relations(user, ({ many }) => ({
+	posts: many(post),
+	comments: many(comment),
+	followers: many(follows, { relationName: "followers" }),
+	following: many(follows, { relationName: "following" }),
+	actorNotifications: many(notification, { relationName: "actor" }),
+	recipientNotifications: many(notification, { relationName: "recipient" }),
+}));
 
 export const session = pgTable("session", {
 	id: text("id").primaryKey(),
