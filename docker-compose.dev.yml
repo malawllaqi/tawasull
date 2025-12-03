@@ -23,9 +23,8 @@ services:
       - DATABASE_URL=postgres://postgres:password@db:5432/postgres
     command: >
       sh -c "
-        cd /app/packages/db && pnpm db:migrate &&
-        cd /app && npx nodemon -w /app/packages/db/src/migrations -e sql -x 'cd /app/packages/db && pnpm db:migrate' & 
-        cd /app/apps/api && pnpm dev
+        cd /app/packages/db && pnpm db:generate && pnpm db:migrate &&
+        cd /app && pnpm dev --filter api
       "
     ports:
       - 3001:3001
