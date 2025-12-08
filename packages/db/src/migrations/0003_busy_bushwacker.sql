@@ -1,0 +1,1 @@
+ALTER TABLE "group_member" ALTER COLUMN "group_id" SET DATA TYPE uuid;

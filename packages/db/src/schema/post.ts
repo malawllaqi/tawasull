@@ -1,5 +1,6 @@
 import { type InferInsertModel, relations, sql } from "drizzle-orm";
 import {
+	boolean,
 	index,
 	pgEnum,
 	pgTable,
@@ -10,6 +11,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 import { comment } from "./comment";
+import { group } from "./group";
 import { notification } from "./notification";
 
 const timestamps = {
@@ -27,11 +29,17 @@ export const post = pgTable(
 		userId: text("user_id")
 			.references(() => user.id, { onDelete: "cascade" })
 			.notNull(),
+		groupId: uuid("group_id").references(() => group.id, {
+			onDelete: "cascade",
+		}),
+		isPinned: boolean("is_pinned").notNull().default(false), // For group admins to pin posts
+
 		...timestamps,
 	},
 	(table) => [
 		index("post_user_id_idx").on(table.userId),
 		index("post_created_at_idx").on(table.createdAt),
+		index("post_group_created_idx").on(table.groupId, table.createdAt),
 	]
 );
 
@@ -39,11 +47,15 @@ export const postRelations = relations(post, ({ many, one }) => ({
 	media: many(postMedia),
 	likes: many(postLike),
 	comment: many(comment),
+	notification: many(notification),
 	user: one(user, {
 		fields: [post.userId],
 		references: [user.id],
 	}),
-	notification: many(notification),
+	group: one(group, {
+		fields: [post.groupId],
+		references: [group.id],
+	}),
 }));
 
 export const mediaTypeEnum = pgEnum("media_type", ["image", "video"]);
@@ -95,6 +107,27 @@ export const postLikeRelations = relations(postLike, ({ one }) => ({
 	}),
 	post: one(post, {
 		fields: [postLike.postId],
+		references: [post.id],
+	}),
+}));
+
+export const pinnedPost = pgTable("pinned_post", {
+	userId: text("user_id")
+		.references(() => user.id, { onDelete: "cascade" })
+		.notNull()
+		.primaryKey(),
+	postId: uuid("post_id")
+		.references(() => post.id, { onDelete: "cascade" })
+		.notNull(),
+});
+
+export const pinnedPostRelations = relations(pinnedPost, ({ one }) => ({
+	user: one(user, {
+		fields: [pinnedPost.userId],
+		references: [user.id],
+	}),
+	post: one(post, {
+		fields: [pinnedPost.postId],
 		references: [post.id],
 	}),
 }));
