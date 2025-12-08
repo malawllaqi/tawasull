@@ -1,9 +1,9 @@
 import { and, type DB, desc, eq, sql } from "@tawasull/db";
 import { type PostModel, post, postLike, postMedia } from "@tawasull/db/schema";
 import type { z } from "zod";
-import { env } from "@/utils/env";
-import { logger } from "@/utils/logger";
-import { deleteImage, uploadImage } from "@/utils/s3";
+import { env } from "@/lib/env";
+import { logger } from "@/lib/logger";
+import { deleteImage, uploadImage } from "@/lib/s3";
 import type { createPostSchema, getPostsSchema } from "./post.schema";
 
 export async function createPost(
@@ -230,15 +230,15 @@ export async function likePost(
 		});
 
 		if (isLiked) {
-			const unlike = await db
+			const [unlike] = await db
 				.delete(postLike)
 				.where(and(eq(postLike.postId, postId), eq(postLike.userId, userId)))
 				.returning();
 
-			return unlike[0];
+			return { ...unlike, success: false };
 		}
 
-		const result = await db
+		const [result] = await db
 			.insert(postLike)
 			.values({
 				postId,
@@ -246,7 +246,7 @@ export async function likePost(
 			})
 			.returning();
 
-		return result[0];
+		return { ...result, success: true };
 	} catch (error) {
 		const message = error instanceof Error ? error.message : "Unknown error";
 		logger.error({ message, postId }, "likePost: failed to toggle likes post");

@@ -2,7 +2,7 @@ import { type DB, desc, eq } from "@tawasull/db";
 import { comment } from "@tawasull/db/schema/comment";
 import { post } from "@tawasull/db/schema/post";
 import type z from "zod";
-import { logger } from "@/utils/logger";
+import { logger } from "@/lib/logger";
 import type {
 	createCommentSchema,
 	getPostCommentsSchema,

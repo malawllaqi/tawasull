@@ -3,7 +3,6 @@ import type { Post } from "@tawasull/shared";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { Bookmark, Dot, MessageCircle, Repeat2 } from "lucide-react";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +11,7 @@ import {
 	CardFooter,
 	CardHeader,
 } from "@/components/ui/card";
-import GradientAvatar from "@/components/ui/gradient-avatar";
+import { UserAvatarProfile } from "@/components/user-avatar-profile";
 import { cn } from "@/lib/utils";
 import { LikePost } from "./actions/like-post";
 import { PostMediaPreview } from "./post-media";
@@ -40,15 +39,11 @@ export function PostPreview({ post, asLink = false }: PostPreviewProps) {
 						params={{ username: post.user.username }}
 						to="/$username"
 					>
-						<Avatar className="">
-							<AvatarImage
-								alt={`@${post.user.username}`}
-								className="h-11 w-11 object-cover"
-								src={post.user.image ?? ""}
-							/>
-
-							<GradientAvatar letter={post.user.name[0]} />
-						</Avatar>
+						<UserAvatarProfile
+							name={post.user.name}
+							size={"sm"}
+							url={post.user.image}
+						/>
 						<Badge className="absolute right-01 bottom-0 m-0 h-3 w-3 rounded-full border-2 border-card bg-green-400 p-0" />
 					</Link>
 					<Link

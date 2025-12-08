@@ -1,7 +1,7 @@
 import { follows, user } from "@tawasull/db/schema/auth";
 import { createSelectSchema, createUpdateSchema } from "drizzle-zod";
 import { z } from "zod";
-import { errorResponses } from "@/utils/http";
+import { errorResponses } from "@/lib/http";
 
 export const getUsersSchema = {
 	tags: ["user"],

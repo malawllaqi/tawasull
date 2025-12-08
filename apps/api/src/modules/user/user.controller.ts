@@ -1,9 +1,9 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { StatusCodes } from "http-status-codes";
 import type z from "zod";
-import { httpError } from "@/utils/http";
-import { logger } from "@/utils/logger";
-import { PostgresErrorCode, type PostgresErrorType } from "@/utils/types";
+import { httpError } from "@/lib/http";
+import { logger } from "@/lib/logger";
+import { PostgresErrorCode, type PostgresErrorType } from "@/lib/types";
 import { createNotification } from "../notification/notification.service";
 import type {
 	followsUserSchema,

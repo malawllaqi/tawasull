@@ -30,6 +30,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
+    "@tawasull/shared": "workspace:*",
     "@faker-js/faker": "^10.1.0",
     "@testcontainers/postgresql": "^11.7.2",
     "@types/node": "catalog:",

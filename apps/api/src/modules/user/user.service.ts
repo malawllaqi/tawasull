@@ -2,9 +2,9 @@ import type { Session } from "@tawasull/auth";
 import { and, type DB, desc, eq, not, sql } from "@tawasull/db";
 import { follows, user } from "@tawasull/db/schema/auth";
 import type { z } from "zod";
-import { env } from "@/utils/env";
-import { logger } from "@/utils/logger";
-import { deleteImage, uploadImage } from "@/utils/s3";
+import { env } from "@/lib/env";
+import { logger } from "@/lib/logger";
+import { deleteImage, uploadImage } from "@/lib/s3";
 import type { updateUserSchema } from "./user.schema";
 
 export async function getUsers(

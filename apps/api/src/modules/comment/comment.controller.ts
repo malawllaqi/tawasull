@@ -1,7 +1,9 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { StatusCodes } from "http-status-codes";
 import type { z } from "zod";
-import { httpError } from "@/utils/http";
+import { httpError } from "@/lib/http";
+import { createNotification } from "../notification/notification.service";
+import { getPost } from "../post/post.service";
 import type {
 	createCommentSchema,
 	deleteCommentSchema,
@@ -20,12 +22,36 @@ export async function createCommentHandler(
 ) {
 	try {
 		const { content, postId } = request.body;
+		const currentUser = request.user;
+		const post = await getPost(
+			{ currentUserId: currentUser.id, postId },
+			request.db
+		);
+
+		if (!post) {
+			return httpError({
+				reply,
+				message: "Post not found",
+				code: StatusCodes.NOT_FOUND,
+			});
+		}
 
 		const result = await createComment(
 			{
 				content,
 				postId,
 				currentUserId: request.user.id,
+			},
+			request.db
+		);
+
+		await createNotification(
+			{
+				actorId: request.user.id,
+				recipientId: post.userId,
+				postId: post.id,
+				commentId: result?.id,
+				type: "COMMENT",
 			},
 			request.db
 		);

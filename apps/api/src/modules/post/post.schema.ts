@@ -5,7 +5,7 @@ import {
 	createUpdateSchema,
 } from "drizzle-zod";
 import { z } from "zod";
-import { errorResponses } from "@/utils/http";
+import { errorResponses } from "@/lib/http";
 
 export const createPostSchema = {
 	tags: ["post"],

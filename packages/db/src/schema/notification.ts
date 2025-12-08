@@ -13,7 +13,7 @@ import { post } from "./post";
 
 const timestamps = {
 	createdAt: timestamp().defaultNow().notNull(),
-	updatedAt: timestamp({ mode: "date", withTimezone: true }).$onUpdateFn(
+	updatedAt: timestamp({ mode: "string", withTimezone: true }).$onUpdateFn(
 		() => sql`now()`
 	),
 };

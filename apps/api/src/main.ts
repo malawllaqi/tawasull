@@ -1,8 +1,8 @@
 import "dotenv/config";
 import { ping, setupDB } from "@tawasull/db";
-import { config, env } from "./utils/env";
-import { logger } from "./utils/logger";
-import { buildServer } from "./utils/server";
+import { config, env } from "./lib/env";
+import { logger } from "./lib/logger";
+import { buildServer } from "./lib/server";
 
 async function main() {
 	const { db } = await setupDB();
