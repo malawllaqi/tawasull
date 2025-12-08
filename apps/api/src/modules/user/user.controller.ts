@@ -1,9 +1,10 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { StatusCodes } from "http-status-codes";
 import type z from "zod";
-import { httpError } from "@/utils/http";
-import { logger } from "@/utils/logger";
-import { PostgresErrorCode, type PostgresErrorType } from "@/utils/types";
+import { httpError } from "@/lib/http";
+import { logger } from "@/lib/logger";
+import { PostgresErrorCode, type PostgresErrorType } from "@/lib/types";
+import { createNotification } from "../notification/notification.service";
 import type {
 	followsUserSchema,
 	getUserSchema,
@@ -120,6 +121,13 @@ export async function followUserHandler(
 ) {
 	try {
 		const { userId } = request.params;
+		if (userId === request.user.id) {
+			return httpError({
+				reply,
+				code: StatusCodes.BAD_REQUEST,
+				message: "Cannot perform this action on yourself",
+			});
+		}
 		const result = await followUser(
 			{ currentUserId: request.user.id, targetUserId: userId },
 			request.db
@@ -132,6 +140,15 @@ export async function followUserHandler(
 				message: "Already following or user not found",
 			});
 		}
+
+		await createNotification(
+			{
+				actorId: request.user.id,
+				recipientId: userId,
+				type: "FOLLOW",
+			},
+			request.db
+		);
 
 		reply.status(200).send(result);
 	} catch (error) {
@@ -154,6 +171,14 @@ export async function unfollowUserHandler(
 ) {
 	try {
 		const { userId } = request.params;
+
+		if (userId === request.user.id) {
+			return httpError({
+				reply,
+				code: StatusCodes.BAD_REQUEST,
+				message: "Cannot perform this action on yourself",
+			});
+		}
 		const result = await unfollowUser(
 			{ currentUserId: request.user.id, targetUserId: userId },
 			request.db

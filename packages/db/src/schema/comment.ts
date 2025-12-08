@@ -1,6 +1,7 @@
 import { relations, sql } from "drizzle-orm";
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { user } from "./auth";
+import { notification } from "./notification";
 import { post } from "./post";
 
 const timestamps = {
@@ -23,7 +24,7 @@ export const comment = pgTable("comment", {
 	...timestamps,
 });
 
-export const commentRelations = relations(comment, ({ one }) => ({
+export const commentRelations = relations(comment, ({ one, many }) => ({
 	user: one(user, {
 		fields: [comment.userId],
 		references: [user.id],
@@ -32,4 +33,5 @@ export const commentRelations = relations(comment, ({ one }) => ({
 		fields: [comment.postId],
 		references: [post.id],
 	}),
+	notification: many(notification),
 }));

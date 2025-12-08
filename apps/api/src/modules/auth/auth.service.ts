@@ -1,5 +1,5 @@
 import type { Auth } from "@tawasull/auth";
-import { logger } from "@/utils/logger";
+import { logger } from "@/lib/logger";
 
 export async function createUser(
 	input: {
@@ -8,7 +8,7 @@ export async function createUser(
 		username: string;
 		name: string;
 	},
-	auth: Auth,
+	auth: Auth
 ) {
 	const { email, password, name, username } = input;
 

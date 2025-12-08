@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker";
 import { setupDB } from "@tawasull/db";
 import { createUser } from "@/modules/auth/auth.service";
 import { createPost } from "@/modules/post/post.service";
-import { setupAuth } from "@/utils/auth";
+import { setupAuth } from "@/lib/auth";
 
 async function main() {
 	const { db } = await setupDB();

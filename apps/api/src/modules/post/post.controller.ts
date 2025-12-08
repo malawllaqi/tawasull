@@ -1,9 +1,10 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { StatusCodes } from "http-status-codes";
 import type { z } from "zod";
-import { httpError } from "@/utils/http";
-import { logger } from "@/utils/logger";
-import type { PostgresErrorType } from "@/utils/types";
+import { httpError } from "@/lib/http";
+import { logger } from "@/lib/logger";
+import type { PostgresErrorType } from "@/lib/types";
+import { createNotification } from "../notification/notification.service";
 import type {
 	createPostSchema,
 	deletePostSchema,
@@ -154,12 +155,12 @@ export async function likePostHandler(
 	reply: FastifyReply
 ) {
 	const { postId } = request.params;
-	const result = await getPost(
+	const post = await getPost(
 		{ postId, currentUserId: request.user.id },
 		request.db
 	);
 
-	if (!result) {
+	if (!post) {
 		return httpError({
 			reply,
 			code: StatusCodes.NOT_FOUND,
@@ -167,7 +168,22 @@ export async function likePostHandler(
 		});
 	}
 
-	await likePost({ postId: result.id, userId: request.user.id }, request.db);
+	const result = await likePost(
+		{ postId: post.id, userId: request.user.id },
+		request.db
+	);
+
+	if (post.userId !== request.user.id && result.success) {
+		await createNotification(
+			{
+				actorId: request.user.id,
+				recipientId: post.userId,
+				postId: post.id,
+				type: "LIKE",
+			},
+			request.db
+		);
+	}
 
 	return reply.status(200).send();
 }

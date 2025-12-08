@@ -2,8 +2,8 @@ import { faker } from "@faker-js/faker";
 import type { FastifyInstance } from "fastify";
 import { describe, expect, test } from "vitest";
 import { db } from "@/test/setup";
-import { setupAuth } from "@/utils/auth";
-import { buildServer } from "@/utils/server";
+import { setupAuth } from "@/lib/auth";
+import { buildServer } from "@/lib/server";
 import { createUser } from "../auth/auth.service";
 
 async function getCookie(app: FastifyInstance) {

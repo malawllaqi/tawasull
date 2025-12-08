@@ -2,7 +2,7 @@ import { user } from "@tawasull/db/schema/auth";
 import { comment } from "@tawasull/db/schema/comment";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import z from "zod";
-import { errorResponses } from "@/utils/http";
+import { errorResponses } from "@/lib/http";
 
 export const createCommentSchema = {
 	tags: ["comment"],

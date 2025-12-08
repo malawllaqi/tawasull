@@ -10,6 +10,8 @@ import {
 	SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { authQueryOptions } from "@/modules/auth/queries";
+import { AppNotifications } from "@/modules/notifications/components/app-notifications";
+import { NotificationSkeleton } from "@/modules/notifications/components/notification-skeleton";
 import { UsersList } from "@/modules/users/components/users-list";
 import { UsersListSkeleton } from "@/modules/users/components/users-list-skeleton";
 
@@ -43,8 +45,11 @@ export function AppLayout() {
 
 					<div className="flex items-center gap-2 px-4">
 						<div className="hidden md:flex" />
-						<UserNav currentUser={currentUser} />
 						<ThemeToggle />
+						<Suspense fallback={<NotificationSkeleton />}>
+							<AppNotifications currentUser={currentUser} />
+						</Suspense>
+						<UserNav currentUser={currentUser} />
 					</div>
 				</header>
 				<main className="flex">
